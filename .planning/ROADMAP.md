@@ -36,13 +36,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User session persists across browser refresh and page navigation
   4. Cashier users cannot access manager-only routes (shown access denied or redirected)
 
-**Plans**: 2/5 plans executed
+**Plans**: 3/5 plans executed
 
 Plans:
 
 - [x] 01-01-PLAN.md — Install Better Auth and create server/client configuration
 - [x] 01-02-PLAN.md — Extend Prisma schema with session/account/verification models
-- [ ] 01-03-PLAN.md — Create API route handler and full-page login UI
+- [x] 01-03-PLAN.md — Create API route handler and full-page login UI
 - [ ] 01-04-PLAN.md — Implement middleware route protection and protected pages
 - [ ] 01-05-PLAN.md — Seed demo users and verify complete auth flow
 
@@ -181,7 +181,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Authentication | 2/5 | In Progress|  |
+| 1. Authentication | 3/5 | In Progress|  |
 | 2. Product Management | 0/TBD | Not started | - |
 | 3. Inventory Tracking | 0/TBD | Not started | - |
 | 4. Inventory Adjustments | 0/TBD | Not started | - |
