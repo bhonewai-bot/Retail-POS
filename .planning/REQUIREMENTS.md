@@ -94,22 +94,22 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROD-02 | Phase 2 | Pending |
 | PROD-03 | Phase 2 | Pending |
 | PROD-04 | Phase 2 | Pending |
+| SEARCH-01 | Phase 2 | Pending |
 | INV-01 | Phase 3 | Pending |
 | INV-02 | Phase 3 | Pending |
-| INV-03 | Phase 3 | Pending |
-| INV-04 | Phase 3 | Pending |
-| CHECK-01 | Phase 4 | Pending |
-| CHECK-02 | Phase 4 | Pending |
-| CHECK-03 | Phase 4 | Pending |
-| CHECK-04 | Phase 4 | Pending |
-| CHECK-05 | Phase 4 | Pending |
-| TRANS-01 | Phase 5 | Pending |
-| TRANS-02 | Phase 5 | Pending |
-| TRANS-03 | Phase 5 | Pending |
-| SEARCH-01 | Phase 6 | Pending |
-| SEARCH-02 | Phase 6 | Pending |
-| RECEIPT-01 | Phase 6 | Pending |
-| RECEIPT-02 | Phase 6 | Pending |
+| INV-03 | Phase 4 | Pending |
+| CHECK-01 | Phase 5 | Pending |
+| CHECK-02 | Phase 5 | Pending |
+| CHECK-03 | Phase 5 | Pending |
+| CHECK-04 | Phase 5 | Pending |
+| CHECK-05 | Phase 5 | Pending |
+| INV-04 | Phase 6 | Pending |
+| TRANS-01 | Phase 7 | Pending |
+| TRANS-02 | Phase 7 | Pending |
+| TRANS-03 | Phase 7 | Pending |
+| SEARCH-02 | Phase 2 | Pending |
+| RECEIPT-01 | Phase 8 | Pending |
+| RECEIPT-02 | Phase 8 | Pending |
 
 **Coverage:**
 - v1 requirements: 24 total
@@ -118,4 +118,4 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-07-06*
-*Last updated: 2026-07-06 after initial definition*
+*Last updated: 2026-07-06 after roadmap creation*
