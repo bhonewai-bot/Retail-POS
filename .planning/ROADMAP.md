@@ -32,10 +32,14 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Users with different roles (cashier vs manager) see different interface elements and routes
   3. User session persists across browser refresh and page navigation
   4. Cashier users cannot access manager-only routes (shown access denied or redirected)
-**Plans**: TBD
+**Plans**: 5 plans
 
 Plans:
-- [ ] 01-01: TBD
+- [ ] 01-01-PLAN.md — Install Better Auth and create server/client configuration
+- [ ] 01-02-PLAN.md — Extend Prisma schema with session/account/verification models
+- [ ] 01-03-PLAN.md — Create API route handler and full-page login UI
+- [ ] 01-04-PLAN.md — Implement middleware route protection and protected pages
+- [ ] 01-05-PLAN.md — Seed demo users and verify complete auth flow
 
 ### Phase 2: Product Management
 **Goal**: Managers can create, edit, list, and search products
