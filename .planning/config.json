@@ -1,5 +1,5 @@
 {
-  "model_profile": "balanced",
+  "model_profile": "inherit",
   "commit_docs": true,
   "parallelization": true,
   "search_gitignored": false,
@@ -88,8 +88,8 @@
   "mode": "yolo",
   "granularity": "fine",
   "model_policy": {
-    "high": "claude-haiku-4-5",
-    "medium": "claude-haiku-4-5",
+    "high": "claude-opus-4-8",
+    "medium": "claude-sonnet-4-5",
     "low": "claude-haiku-4-5"
   },
   "resolve_model_ids": false
