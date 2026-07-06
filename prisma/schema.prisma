@@ -1,0 +1,120 @@
+// Retail POS — Prisma schema
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── Categories ───────────────────────────────────────────────
+model Category {
+  id       Int       @id @default(autoincrement())
+  name     String    @unique
+  products Product[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── Products ─────────────────────────────────────────────────
+model Product {
+  id          Int      @id @default(autoincrement())
+  name        String
+  sku         String   @unique
+  barcode     String?  @unique
+  description String?
+  price       Decimal  @db.Decimal(10, 2)
+  cost        Decimal? @db.Decimal(10, 2)
+  stock       Int      @default(0)
+  lowStockThreshold Int @default(10)
+  isActive    Boolean  @default(true)
+
+  categoryId Int?
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  orderItems OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId])
+  @@index([sku])
+  @@index([barcode])
+}
+
+// ─── Customers ────────────────────────────────────────────────
+model Customer {
+  id             Int     @id @default(autoincrement())
+  name           String
+  email          String? @unique
+  phone          String?
+  loyaltyPoints  Int     @default(0)
+
+  orders Order[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([phone])
+}
+
+// ─── Orders ───────────────────────────────────────────────────
+model Order {
+  id            Int      @id @default(autoincrement())
+  orderNumber   String   @unique
+  subtotal      Decimal  @db.Decimal(10, 2)
+  tax           Decimal  @db.Decimal(10, 2)
+  total         Decimal  @db.Decimal(10, 2)
+  paymentMethod String   // cash, card, mobile, etc.
+  status        String   @default("completed") // completed, refunded, voided
+  notes         String?
+
+  customerId Int?
+  customer   Customer? @relation(fields: [customerId], references: [id])
+
+  items OrderItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderNumber])
+  @@index([customerId])
+  @@index([createdAt])
+}
+
+// ─── Order Items ──────────────────────────────────────────────
+model OrderItem {
+  id       Int    @id @default(autoincrement())
+  quantity Int
+  price    Decimal @db.Decimal(10, 2) // price at time of sale
+  total    Decimal @db.Decimal(10, 2)
+
+  orderId   Int
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId Int
+  product   Product @relation(fields: [productId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+  @@index([productId])
+}
+
+// ─── POS Operators (Users) ───────────────────────────────────
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  role     String @default("cashier") // admin, manager, cashier
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
