@@ -44,7 +44,8 @@
     "post_planning_gaps": true,
     "security_enforcement": true,
     "security_asvs_level": 1,
-    "security_block_on": "high"
+    "security_block_on": "high",
+    "_auto_chain_active": false
   },
   "ship": {
     "pr_body_sections": [
@@ -87,8 +88,15 @@
   "mode": "yolo",
   "granularity": "fine",
   "model_policy": {
-    "high": "sonnet",
-    "medium": "haiku",
-    "low": "haiku"
-  }
+    "high": "claude-opus-4-8",
+    "medium": "claude-sonnet-4-5",
+    "low": "claude-haiku-4-5"
+  },
+  "model_overrides": {
+    "gsd-executor": "haiku",
+    "gsd-verifier": "sonnet",
+    "gsd-planner": "sonnet",
+    "gsd-phase-researcher": "sonnet"
+  },
+  "resolve_model_ids": false
 }
