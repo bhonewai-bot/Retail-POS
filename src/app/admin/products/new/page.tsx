@@ -50,7 +50,7 @@ export default function NewProductPage() {
   }
 
   return (
-    <div className="max-w-3xl">
+    <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold tracking-tight text-foreground">
           New Product
