@@ -63,8 +63,12 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
+**Wave 1**
 
 - [ ] 02-01-PLAN.md — Product API layer: category seed, CRUD endpoints, search endpoint
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 02-02-PLAN.md — Admin UI: product list with search, create/edit forms, dashboard nav
 
 ### Phase 3: Inventory Tracking
