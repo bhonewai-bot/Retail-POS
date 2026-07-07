@@ -9,10 +9,10 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Authentication
 
-- [ ] **AUTH-01**: User can log in with email and password
-- [ ] **AUTH-02**: Role-based access (cashier vs manager)
-- [ ] **AUTH-03**: Session persists across browser refresh
-- [ ] **AUTH-04**: Cashiers can't access admin routes
+- [x] **AUTH-01**: User can log in with email and password
+- [x] **AUTH-02**: Role-based access (cashier vs manager)
+- [x] **AUTH-03**: Session persists across browser refresh
+- [x] **AUTH-04**: Cashiers can't access admin routes
 
 ### Product Management
 
@@ -86,10 +86,10 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| AUTH-01 | Phase 1 | Pending |
-| AUTH-02 | Phase 1 | Pending |
-| AUTH-03 | Phase 1 | Pending |
-| AUTH-04 | Phase 1 | Pending |
+| AUTH-01 | Phase 1 | Complete |
+| AUTH-02 | Phase 1 | Complete |
+| AUTH-03 | Phase 1 | Complete |
+| AUTH-04 | Phase 1 | Complete |
 | PROD-01 | Phase 2 | Pending |
 | PROD-02 | Phase 2 | Pending |
 | PROD-03 | Phase 2 | Pending |
@@ -112,6 +112,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | RECEIPT-02 | Phase 8 | Pending |
 
 **Coverage:**
+
 - v1 requirements: 24 total
 - Mapped to phases: 24
 - Unmapped: 0 ✓

@@ -13,7 +13,7 @@ This roadmap delivers a complete point-of-sale system through 8 focused phases. 
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Authentication** - Users can log in with role-based access and persistent sessions
+- [x] **Phase 1: Authentication** - Users can log in with role-based access and persistent sessions (completed 2026-07-07)
 - [ ] **Phase 2: Product Management** - Managers can create, edit, list, and search products
 - [ ] **Phase 3: Inventory Tracking** - Managers can monitor stock levels and receive low-stock alerts
 - [ ] **Phase 4: Inventory Adjustments** - Managers can adjust inventory quantities with history
@@ -36,7 +36,7 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. User session persists across browser refresh and page navigation
   4. Cashier users cannot access manager-only routes (shown access denied or redirected)
 
-**Plans**: 4/5 plans executed
+**Plans**: 5/5 plans complete
 
 Plans:
 
@@ -44,7 +44,7 @@ Plans:
 - [x] 01-02-PLAN.md — Extend Prisma schema with session/account/verification models
 - [x] 01-03-PLAN.md — Create API route handler and full-page login UI
 - [x] 01-04-PLAN.md — Implement middleware route protection and protected pages
-- [ ] 01-05-PLAN.md — Seed demo users and verify complete auth flow
+- [x] 01-05-PLAN.md — Seed demo users and verify complete auth flow
 
 ### Phase 2: Product Management
 
@@ -181,7 +181,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Authentication | 4/5 | In Progress|  |
+| 1. Authentication | 5/5 | Complete    | 2026-07-07 |
 | 2. Product Management | 0/TBD | Not started | - |
 | 3. Inventory Tracking | 0/TBD | Not started | - |
 | 4. Inventory Adjustments | 0/TBD | Not started | - |

@@ -30,7 +30,13 @@ export default function AdminPage() {
           router.push('/login');
           return;
         }
-        setSession(data as SessionData);
+        // Role-based access: only managers can access admin
+        const user = data.user as Record<string, unknown>;
+        if (user?.role !== 'manager') {
+          router.push('/pos');
+          return;
+        }
+        setSession(data as unknown as SessionData);
       } catch (error) {
         console.error('Failed to fetch session:', error);
         router.push('/login');

@@ -30,7 +30,8 @@ export default function LoginPage() {
 
       // Get session to determine role-based redirect
       const { data: session } = await authClient.getSession();
-      if (session?.user?.role === 'manager') {
+      const user = session?.user as Record<string, unknown> | undefined;
+      if (user?.role === 'manager') {
         router.push('/admin');
       } else {
         router.push('/pos');

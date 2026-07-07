@@ -10,7 +10,7 @@ export const auth = betterAuth({
     enabled: true,
   },
   session: {
-    expiresIn: 60 * 60 * 24 * 365 * 100, // 100 years — effectively no expiration
+    expiresIn: 60 * 60 * 24 * 365, // 1 year (max allowed by cookie spec is ~400 days)
     updateAge: 60 * 60 * 24, // Refresh every 24 hours
     cookieCache: {
       enabled: true,

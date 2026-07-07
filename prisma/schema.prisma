@@ -3,7 +3,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../app/generated/prisma"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -11,6 +11,7 @@ datasource db {
 }
 
 // ─── Categories ───────────────────────────────────────────────
+
 model Category {
   id       Int       @id @default(autoincrement())
   name     String    @unique
@@ -21,17 +22,18 @@ model Category {
 }
 
 // ─── Products ─────────────────────────────────────────────────
+
 model Product {
-  id          Int      @id @default(autoincrement())
-  name        String
-  sku         String   @unique
-  barcode     String?  @unique
-  description String?
-  price       Decimal  @db.Decimal(10, 2)
-  cost        Decimal? @db.Decimal(10, 2)
-  stock       Int      @default(0)
-  lowStockThreshold Int @default(10)
-  isActive    Boolean  @default(true)
+  id                Int      @id @default(autoincrement())
+  name              String
+  sku               String   @unique
+  barcode           String?  @unique
+  description       String?
+  price             Decimal  @db.Decimal(10, 2)
+  cost              Decimal? @db.Decimal(10, 2)
+  stock             Int      @default(0)
+  lowStockThreshold Int      @default(10)
+  isActive          Boolean  @default(true)
 
   categoryId Int?
   category   Category? @relation(fields: [categoryId], references: [id])
@@ -47,12 +49,13 @@ model Product {
 }
 
 // ─── Customers ────────────────────────────────────────────────
+
 model Customer {
-  id             Int     @id @default(autoincrement())
-  name           String
-  email          String? @unique
-  phone          String?
-  loyaltyPoints  Int     @default(0)
+  id            Int     @id @default(autoincrement())
+  name          String
+  email         String? @unique
+  phone         String?
+  loyaltyPoints Int     @default(0)
 
   orders Order[]
 
@@ -64,14 +67,15 @@ model Customer {
 }
 
 // ─── Orders ───────────────────────────────────────────────────
+
 model Order {
-  id            Int      @id @default(autoincrement())
-  orderNumber   String   @unique
-  subtotal      Decimal  @db.Decimal(10, 2)
-  tax           Decimal  @db.Decimal(10, 2)
-  total         Decimal  @db.Decimal(10, 2)
-  paymentMethod String   // cash, card, mobile, etc.
-  status        String   @default("completed") // completed, refunded, voided
+  id            Int     @id @default(autoincrement())
+  orderNumber   String  @unique
+  subtotal      Decimal @db.Decimal(10, 2)
+  tax           Decimal @db.Decimal(10, 2)
+  total         Decimal @db.Decimal(10, 2)
+  paymentMethod String // cash, card, mobile, etc.
+  status        String  @default("completed") // completed, refunded, voided
   notes         String?
 
   customerId Int?
@@ -88,8 +92,9 @@ model Order {
 }
 
 // ─── Order Items ──────────────────────────────────────────────
+
 model OrderItem {
-  id       Int    @id @default(autoincrement())
+  id       Int     @id @default(autoincrement())
   quantity Int
   price    Decimal @db.Decimal(10, 2) // price at time of sale
   total    Decimal @db.Decimal(10, 2)
@@ -105,63 +110,72 @@ model OrderItem {
   @@index([productId])
 }
 
-// ─── Better Auth: Sessions ───────────────────────────────────
-model session {
-  id        String   @id
-  expiresAt DateTime
-  token     String   @unique
-  ipAddress String?
-  userAgent String?
-  userId    Int
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@index([userId])
-}
-
-// ─── Better Auth: Accounts ───────────────────────────────────
-model account {
-  id                   String    @id
-  accountId            String
-  providerId           String
-  userId               Int
-  password             String?
-  accessToken          String?
-  refreshToken         String?
-  idToken              String?
-  accessTokenExpiresAt DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                String?
-
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([accountId, providerId])
-  @@index([userId])
-}
-
-// ─── Better Auth: Verification ───────────────────────────────
-model verification {
-  id         String   @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-
-  @@unique([identifier, value])
-}
-
 // ─── POS Operators (Users) ───────────────────────────────────
+
 model User {
-  id       Int    @id @default(autoincrement())
+  id       String  @id @default(cuid())
   name     String
-  email    String @unique
-  role     String @default("cashier") // admin, manager, cashier
+  email    String  @unique
+  role     String  @default("cashier") // admin, manager, cashier
   isActive Boolean @default(true)
 
-  sessions session[]
-  accounts account[]
+  sessions Session[]
+  accounts Account[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  emailVerified Boolean @default(false)
+  image         String?
+
   @@index([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }

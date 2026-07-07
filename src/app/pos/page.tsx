@@ -30,7 +30,7 @@ export default function POSPage() {
           router.push('/login');
           return;
         }
-        setSession(data as SessionData);
+        setSession(data as unknown as SessionData);
       } catch (error) {
         console.error('Failed to fetch session:', error);
         router.push('/login');
