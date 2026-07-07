@@ -38,7 +38,8 @@ model Product {
   categoryId Int?
   category   Category? @relation(fields: [categoryId], references: [id])
 
-  orderItems OrderItem[]
+  orderItems              OrderItem[]
+  inventoryAdjustments InventoryAdjustment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -110,6 +111,28 @@ model OrderItem {
   @@index([productId])
 }
 
+// ─── Inventory Adjustments ──────────────────────────────────
+
+model InventoryAdjustment {
+  id       Int    @id @default(autoincrement())
+  type     String // stock-receipt, damage, count-adjustment, return, other
+  quantity Int // positive = stock increase, negative = stock decrease
+  reason   String?
+
+  productId Int
+  product   Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  @@index([productId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([type])
+}
+
 // ─── POS Operators (Users) ───────────────────────────────────
 
 model User {
@@ -121,6 +144,7 @@ model User {
 
   sessions Session[]
   accounts Account[]
+  inventoryAdjustments InventoryAdjustment[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
