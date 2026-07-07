@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface SessionData {
   user: {
@@ -54,8 +56,8 @@ export default function POSPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     );
   }
@@ -65,23 +67,22 @@ export default function POSPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">POS Terminal</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-4">POS Terminal</h1>
 
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <p className="text-gray-700">
-            Logged in as <span className="font-semibold">{session.user.name}</span>{' '}
-            (<span className="text-sm text-gray-500">{session.user.role}</span>)
-          </p>
-        </div>
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <p className="text-foreground">
+              Logged in as <span className="font-semibold">{session.user.name}</span>{' '}
+              (<span className="text-sm text-muted-foreground">{session.user.role}</span>)
+            </p>
+          </CardContent>
+        </Card>
 
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-700"
-        >
+        <Button variant="destructive" onClick={handleLogout}>
           Logout
-        </button>
+        </Button>
       </div>
     </div>
   );

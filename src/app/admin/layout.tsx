@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
 interface SessionData {
   user: {
@@ -60,8 +62,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     );
   }
@@ -71,24 +73,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <nav className="bg-white shadow">
+    <div className="min-h-screen bg-background">
+      <nav className="bg-card shadow">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
-            <Link href="/admin" className="text-xl font-bold text-gray-900">
+            <Link href="/admin" className="text-xl font-bold text-foreground">
               Retail POS
             </Link>
             <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-700">{session.user.name}</span>
-              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
-                {session.user.role}
-              </span>
-              <button
-                onClick={handleLogout}
-                className="text-sm text-red-600 hover:text-red-800 cursor-pointer"
-              >
+              <span className="text-sm text-foreground">{session.user.name}</span>
+              <Badge variant="secondary">{session.user.role}</Badge>
+              <Button variant="ghost" size="sm" onClick={handleLogout}>
                 Logout
-              </button>
+              </Button>
             </div>
           </div>
         </div>

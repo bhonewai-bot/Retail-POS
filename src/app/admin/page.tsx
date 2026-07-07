@@ -2,7 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface SessionData {
   user: {
@@ -30,7 +33,6 @@ export default function AdminPage() {
           router.push('/login');
           return;
         }
-        // Role-based access: only managers can access admin
         const user = data.user as Record<string, unknown>;
         if (user?.role !== 'manager') {
           router.push('/pos');
@@ -60,8 +62,8 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <p className="text-gray-500">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     );
   }
@@ -71,34 +73,34 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Admin Dashboard</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-4">Admin Dashboard</h1>
 
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <p className="text-gray-700 mb-2">
-            Logged in as <span className="font-semibold">{session.user.name}</span>{' '}
-            (<span className="text-sm text-gray-500">{session.user.role}</span>)
-          </p>
-          <p className="text-sm text-gray-500 italic">Manager-only area</p>
-        </div>
+        <Card className="mb-6">
+          <CardContent className="pt-6">
+            <p className="text-foreground mb-2">
+              Logged in as <span className="font-semibold">{session.user.name}</span>{' '}
+              (<span className="text-sm text-muted-foreground">{session.user.role}</span>)
+            </p>
+            <p className="text-sm text-muted-foreground italic">Manager-only area</p>
+          </CardContent>
+        </Card>
 
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Quick Actions</h2>
-          <a
-            href="/admin/products"
-            className="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
-          >
-            Manage Products
-          </a>
-        </div>
+        <Card className="mb-6">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Button asChild>
+              <Link href="/admin/products">Manage Products</Link>
+            </Button>
+          </CardContent>
+        </Card>
 
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-700"
-        >
+        <Button variant="destructive" onClick={handleLogout}>
           Logout
-        </button>
+        </Button>
       </div>
     </div>
   );
