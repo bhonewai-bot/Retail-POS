@@ -9,8 +9,10 @@ import { Button } from '@/components/ui/button';
 import { DataTable, StatusBadge, DataTablePagination } from '@/components/ui/data-table';
 import { PageContainer } from '@/components/dashboard/page-container';
 import { PageHeader } from '@/components/dashboard/page-header';
+import AdjustmentDialog from '@/components/inventory/adjustment-dialog';
+import AdjustmentHistory from '@/components/inventory/adjustment-history';
 import { cn } from '@/lib/utils';
-import { Search } from 'lucide-react';
+import { Search, Plus } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────
 
@@ -53,6 +55,9 @@ export default function InventoryPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [lowStockFilter, setLowStockFilter] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [adjustDialogOpen, setAdjustDialogOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<InventoryProduct | null>(null);
+  const [activeTab, setActiveTab] = useState<'stock' | 'history'>('stock');
   const debounceTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
   const fetchInventory = useCallback(async (page: number, pageSize = 20) => {
@@ -156,6 +161,23 @@ export default function InventoryPage() {
           return <StatusBadge variant={variant} label={label} />;
         },
       },
+      {
+        id: 'actions',
+        header: '',
+        cell: ({ row }) => (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setSelectedProduct(row.original);
+              setAdjustDialogOpen(true);
+            }}
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Adjust
+          </Button>
+        ),
+      },
     ],
     []
   );
@@ -164,10 +186,30 @@ export default function InventoryPage() {
     <PageContainer>
       <PageHeader
         title="Inventory"
-        description="Monitor stock levels across all products"
+        description="Monitor and adjust stock levels"
       />
 
-      {/* Toolbar */}
+      {/* Tab Navigation */}
+      <div className="flex gap-2 mb-4">
+        <Button
+          variant={activeTab === 'stock' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setActiveTab('stock')}
+        >
+          Stock Levels
+        </Button>
+        <Button
+          variant={activeTab === 'history' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setActiveTab('history')}
+        >
+          Adjustment History
+        </Button>
+      </div>
+
+      {activeTab === 'stock' && (
+        <>
+          {/* Toolbar */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         {/* Search */}
         <div className="relative flex-1">
@@ -209,6 +251,32 @@ export default function InventoryPage() {
           onPageSizeChange={(size) => fetchInventory(1, size)}
         />
       </div>
+        </>
+      )}
+
+      {activeTab === 'history' && (
+        <AdjustmentHistory />
+      )}
+
+      <AdjustmentDialog
+        open={adjustDialogOpen}
+        onOpenChange={setAdjustDialogOpen}
+        product={
+          selectedProduct
+            ? {
+                id: selectedProduct.id,
+                name: selectedProduct.name,
+                sku: selectedProduct.sku,
+                stock: selectedProduct.stock,
+              }
+            : null
+        }
+        onAdjustmentCreated={() => {
+          fetchInventory(pagination.page, pagination.pageSize);
+          setAdjustDialogOpen(false);
+          setSelectedProduct(null);
+        }}
+      />
     </PageContainer>
   );
 }
