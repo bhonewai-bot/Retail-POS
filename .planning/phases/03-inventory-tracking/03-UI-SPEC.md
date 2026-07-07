@@ -9,8 +9,8 @@ created: 2026-07-07
 
 # Phase 3 — Inventory Tracking UI Design Contract
 
-> Visual and interaction contract for the inventory tracking admin UI.
-> Requirements covered: INV-01, INV-02, INV-03
+> Visual and interaction contract for the inventory monitoring admin UI.
+> Requirements covered: INV-01, INV-02, INV-03 (read-only monitoring phase; adjustment actions are Phase 4)
 
 ---
 
@@ -37,7 +37,7 @@ created: 2026-07-07
 
 | Registry | Blocks Used | Safety Gate |
 |----------|-------------|-------------|
-| shadcn official | `button`, `input`, `table`, `badge`, `dialog`, `label`, `select` | not required — official registry |
+| shadcn official | `button`, `input`, `table`, `badge` | not required — official registry |
 | (none) | — | — |
 
 No third-party registries. No safety vetting required.
@@ -68,18 +68,18 @@ Exceptions:
 
 | Role | Size | Weight | Line Height | Tailwind | Font |
 |------|------|--------|-------------|----------|------|
+| Meta | 12px | 400 (regular) | 1.4 | `text-xs` | Inter |
 | Body | 16px | 400 (regular) | 1.5 | `text-base` | Inter |
-| Label | 14px | 500 (medium) | 1.4 | `text-sm` | Inter |
 | Heading | 20px | 600 (semibold) | 1.3 | `text-xl font-semibold` | Roboto |
-| Display | 28px | 700 (bold) | 1.2 | `text-3xl font-bold` | Roboto |
+| Display | 28px | 600 (semibold) | 1.2 | `text-3xl font-semibold` | Roboto |
 
 **Usage rules:**
-- Page titles: Display (28px, bold, Roboto) — one per page, top of content area
+- Page titles: Display (28px, semibold, Roboto) — one per page, top of content area
 - Section headings: Heading (20px, semibold, Roboto)
-- Table headers: Label (14px, medium, Inter) — uppercase, `text-muted-foreground`
-- Form labels: Label (14px, medium, Inter) — normal case
+- Table headers: Meta (12px, regular, Inter) — uppercase, `text-muted-foreground`
+- Form labels: Meta (12px, regular, Inter) — normal case
 - Body / paragraphs: Body (16px, regular, Inter)
-- Meta / captions: 12px (`text-xs`), 400 weight, `text-muted-foreground`
+- Meta / captions / status text: Meta (12px, regular, Inter), `text-muted-foreground`
 - Table cell text: Body (16px, regular, Inter) — default cell weight
 
 ---
@@ -88,17 +88,34 @@ Exceptions:
 
 All values are CSS variables from the zinc preset (`globals.css :root`).
 
-| Role | CSS Variable | oklch Value | Hex Equivalent | Tailwind Token | Usage |
-|------|-------------|-------------|----------------|----------------|-------|
-| Dominant (60%) | `--background` | `oklch(1 0 0)` | `#ffffff` | `bg-background` | Page background |
-| Secondary (30%) | `--card` | `oklch(1 0 0)` | `#ffffff` | `bg-card` | Card surfaces, table containers |
-| Accent (10%) | `--primary` | `oklch(0.21 0.006 285.885)` | `~#27272a` | `bg-primary` | Primary buttons, active nav item, focus rings |
-| Destructive | `--destructive` | `oklch(0.577 0.245 27.325)` | `~#dc2626` | `bg-destructive text-destructive-foreground` | Delete/deactivate confirmation buttons only |
+**60/30/10 Split:**
+
+| Role | Percentage | CSS Variable | oklch Value | Hex Equivalent | Tailwind Token | Usage |
+|------|-----------|-------------|-------------|----------------|----------------|-------|
+| Dominant | 60% | `--background` | `oklch(1 0 0)` | `#ffffff` | `bg-background` | Page background, full-bleed canvas |
+| Secondary | 30% | `--card` | `oklch(1 0 0)` | `#ffffff` | `bg-card` | Card surfaces, table containers |
+| Accent | 10% | `--primary` | `oklch(0.21 0.006 285.885)` | `~#27272a` | `bg-primary` | Primary CTA button, active nav item, focus rings |
+
+**Destructive (semantic, not part of 60/30/10):**
+
+| CSS Variable | oklch Value | Hex Equivalent | Tailwind Token | Usage |
+|-------------|-------------|----------------|----------------|-------|
+| `--destructive` | `oklch(0.577 0.245 27.325)` | `~#dc2626` | `bg-destructive text-destructive-foreground` | Delete/deactivate confirmation buttons only (Phase 4+) |
+
+**Card vs Background visual separation:**
+`--background` and `--card` share the same `#ffffff` value in light mode. Visual separation between the page canvas and card surfaces is achieved through:
+- `shadow-sm` or `shadow` on card/table containers
+- `border border-border` on table cells and input fields
+- `rounded-lg` on card containers
+Do not rely on color difference alone to separate cards from the page.
 
 **Accent reserved for:**
-- "Record Adjustment" submit button (primary CTA)
+- "Low Stock" filter toggle (active state, primary background)
 - Focus ring outline on all form inputs (`ring-primary`)
 - Active nav link underline or background
+
+**Focal point:**
+The stock status column badges are the primary visual anchor. They draw the eye to low and out-of-stock items first through color contrast (amber/red against the white table background). The table is sorted by stock ascending by default so these badges appear at the top of the list.
 
 **Stock-level semantic colors (status badges, NOT accent):**
 
@@ -125,17 +142,14 @@ Install via `npx shadcn add <name>` before building:
 
 | Component | Source | Where Used in Phase 3 |
 |-----------|--------|----------------------|
-| `button` | shadcn (already installed) | CTA buttons, form submit, cancel |
-| `input` | shadcn | Search field, quantity input |
+| `button` | shadcn (already installed) | Low-stock filter toggle, pagination controls |
+| `input` | shadcn | Product search field |
 | `table` | shadcn | Inventory stock table |
 | `badge` | shadcn | Stock-level status badges (healthy/low/out) |
-| `dialog` | shadcn | "Record Adjustment" modal form |
-| `label` | shadcn | Form field labels (quantity, reason, notes) |
-| `select` | shadcn | Adjustment reason dropdown |
 
 **Install command (single call):**
 ```bash
-npx shadcn add button input table badge dialog label select
+npx shadcn add button input table badge
 ```
 
 ---
@@ -150,9 +164,11 @@ npx shadcn add button input table badge dialog label select
 
 ```
 ┌─────────────────────────────────────────────────┐
-│  Inventory  [Record Adjustment]   (flex row)    │  ← page header
+│  Inventory                                     │  ← page title
 ├─────────────────────────────────────────────────┤
-│  [Show Low Stock Only] toggle    Sort: [▼]      │  ← filter bar
+│  [Search products...]                           │  ← search input (full width)
+├─────────────────────────────────────────────────┤
+│  [Show Low Stock Only] toggle                   │  ← filter bar
 ├─────────────────────────────────────────────────┤
 │  Product | SKU | Category | Stock | Status       │  ← table header
 │  Widget  | W-001| Gadgets | 42    | [Healthy]    │
@@ -170,25 +186,14 @@ npx shadcn add button input table badge dialog label select
 | Element | Copy |
 |---------|------|
 | Page title | `Inventory` |
-| Primary CTA | `Record Adjustment` |
 | Empty state heading | `No inventory data yet` |
 | Empty state body | `Add products first, then inventory levels will appear here.` |
 | Error state | `Something went wrong loading inventory.` + `Check your connection and try again.` |
-| Destructive confirmation | `Record Stock Adjustment`: `This will change the stock level for {product.name}. Enter the new quantity and a reason below.` |
 | Low-stock filter label | `Show Low Stock Only` |
 | Stock zero label | `Out of Stock` |
 | Stock low label | `Low Stock` |
 | Stock healthy label | `Healthy` |
 | Table "no results" row | `No products match your filter.` |
-| Adjustment dialog title | `Record Adjustment` |
-| Adjustment dialog description | `Update stock level for {product.name}` |
-| Quantity label | `New Quantity` |
-| Reason label | `Reason` |
-| Notes label | `Notes (optional)` |
-| Reason options | `Stock Receipt`, `Damaged`, `Count Adjustment`, `Return`, `Other` |
-| Submit button | `Save Adjustment` |
-| Cancel button | `Cancel` |
-| Success toast | `Stock updated successfully` |
 
 ---
 
@@ -208,24 +213,11 @@ npx shadcn add button input table badge dialog label select
 - **Checked:** Filters table to only show products where `stock <= LOW_STOCK_THRESHOLD`.
 - **Threshold:** 10 units (constant, not user-configurable in this phase).
 
-### Record Adjustment Dialog (Modal)
-
-- **Trigger:** "Record Adjustment" button in page header.
-- **Dialog opens with:** Pre-filled product selector (searchable `<select>` or combobox) + quantity input + reason dropdown + notes textarea.
-- **Quantity input:** Number input, `min="0"`, placeholder `"Enter new quantity"`.
-- **Reason select:** Dropdown with 5 options: Stock Receipt, Damaged, Count Adjustment, Return, Other.
-- **Notes field:** Optional textarea, max 255 characters, placeholder `"Add a note..."`.
-- **Submit:** `POST /api/inventory/adjust` with `{ productId, newQuantity, reason, notes }`.
-- **On success:** Close dialog, show toast `Stock updated successfully`, re-fetch table data.
-- **On error:** Show inline error message below the form, keep dialog open.
-- **Cancel:** Close dialog, discard form state.
-
 ### API Endpoints Required
 
 | Method | Route | Purpose | Response |
 |--------|-------|---------|----------|
 | GET | `/api/inventory` | List all products with stock levels, supports `?lowStock=true` and `?page=N` | `{ products: [...], pagination }` |
-| PUT | `/api/inventory/{productId}` | Update stock quantity for a product | `{ product: { id, stock } }` |
 
 ---
 
@@ -237,7 +229,6 @@ npx shadcn add button input table badge dialog label select
 | Empty (no products at all) | Full-page empty state centered in content area |
 | Empty (no filter results) | Single table row: "No products match your filter." spanning all columns |
 | Error (fetch failed) | Inline error banner: red border, `destructive` text, "Try again" link |
-| Success (adjustment saved) | Toast notification (bottom-right): green check + "Stock updated successfully" |
 | Stock = 0 | Red badge: "Out of Stock" |
 | Stock 1-10 | Amber badge: "Low Stock" |
 | Stock > 10 | Green badge: "Healthy" |
