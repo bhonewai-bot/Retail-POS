@@ -1,11 +1,9 @@
 "use client";
 
-import { type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, PanelLeft } from "lucide-react";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
+import { Menu } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -29,7 +27,7 @@ interface AppHeaderProps {
 }
 
 const segmentLabels: Record<string, string> = {
-  admin: "Admin",
+  admin: "Dashboard",
   products: "Products",
   new: "New Product",
   edit: "Edit Product",
@@ -40,6 +38,7 @@ function AppBreadcrumb() {
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
 
+  // Root: just show Dashboard
   if (segments.length === 0 || (segments.length === 1 && segments[0] === "admin")) {
     return (
       <Breadcrumb>
@@ -57,13 +56,14 @@ function AppBreadcrumb() {
       <BreadcrumbList>
         <BreadcrumbItem>
           <BreadcrumbLink render={<Link href="/admin" />}>
-            Home
+            Dashboard
           </BreadcrumbLink>
         </BreadcrumbItem>
-        {segments.map((segment, index) => {
-          const href = "/" + segments.slice(0, index + 1).join("/");
+        {segments.slice(1).map((segment, index) => {
+          const realIndex = index + 1;
+          const href = "/" + segments.slice(0, realIndex + 1).join("/");
           const label = segmentLabels[segment] || segment;
-          const isLast = index === segments.length - 1;
+          const isLast = index === segments.slice(1).length - 1;
 
           return (
             <BreadcrumbItem key={href}>
@@ -105,31 +105,9 @@ export function AppHeader({ navItems, user, onLogout }: AppHeaderProps) {
         </SheetContent>
       </Sheet>
 
-      {/* Desktop sidebar toggle (visual consistency) */}
-      <div className="hidden lg:block">
-        <AppBreadcrumb />
-      </div>
-
-      {/* Mobile: just show current page */}
-      <div className="lg:hidden">
-        <AppBreadcrumb />
-      </div>
+      <AppBreadcrumb />
 
       <div className="flex-1" />
-
-      {/* Right side actions */}
-      <div className="flex items-center gap-2">
-        {navItems.map((item) => (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={buttonVariants({ variant: "ghost", size: "sm", className: "hidden sm:flex" })}
-          >
-            <item.icon className="mr-2 h-4 w-4" />
-            {item.label}
-          </Link>
-        ))}
-      </div>
     </header>
   );
 }
