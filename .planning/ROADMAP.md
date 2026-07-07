@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Authentication** - Users can log in with role-based access and persistent sessions (completed 2026-07-07)
 - [x] **Phase 2: Product Management** - Managers can create, edit, list, and search products (completed 2026-07-07)
 - [x] **Phase 3: Inventory Tracking** - Managers can monitor stock levels and receive low-stock alerts (completed 2026-07-07)
-- [ ] **Phase 4: Inventory Adjustments** - Managers can adjust inventory quantities with history
+- [x] **Phase 4: Inventory Adjustments** - Managers can adjust inventory quantities with history (completed 2026-07-07)
 - [ ] **Phase 5: Checkout Flow** - Cashiers can build carts, calculate totals, and process transactions
 - [ ] **Phase 6: Atomic Transactions** - System handles concurrent inventory updates safely
 - [ ] **Phase 7: Transaction History** - Managers can view and filter transaction records
@@ -104,7 +104,7 @@ Plans:
   3. Inventory adjustment history is visible and auditable
   4. Stock levels update correctly in real-time after adjustments
 
-**Plans**: 1/2 plans executed
+**Plans**: 2/2 plans complete
 
 Plans:
 **Wave 1**
@@ -113,7 +113,7 @@ Plans:
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 04-02-PLAN.md — Adjustment dialog, history component, and inventory page tab UI
+- [x] 04-02-PLAN.md — Adjustment dialog, history component, and inventory page tab UI
 
 ### Phase 5: Checkout Flow
 
@@ -198,7 +198,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 1. Authentication | 5/5 | Complete    | 2026-07-07 |
 | 2. Product Management | 2/2 | Complete | 2026-07-07 |
 | 3. Inventory Tracking | 2/2 | Complete    | 2026-07-07 |
-| 4. Inventory Adjustments | 1/2 | In Progress|  |
+| 4. Inventory Adjustments | 2/2 | Complete   | 2026-07-07 |
 | 5. Checkout Flow | 0/TBD | Not started | - |
 | 6. Atomic Transactions | 0/TBD | Not started | - |
 | 7. Transaction History | 0/TBD | Not started | - |
