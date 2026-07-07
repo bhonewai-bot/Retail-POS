@@ -8,9 +8,8 @@ import { authClient } from '@/lib/auth-client';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { DataTable } from '@/components/ui/data-table';
+import { DataTable, StatusBadge, DataTablePagination } from '@/components/ui/data-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,6 +34,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import {
   Search,
@@ -42,10 +42,13 @@ import {
   MoreHorizontal,
   Pencil,
   Trash2,
+  RefreshCw,
+  Download,
+  Filter,
   Package,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
+
+// ─── Types ───────────────────────────────────────────────────────
 
 interface Category {
   id: number;
@@ -71,30 +74,16 @@ interface Pagination {
   total: number;
 }
 
-function getStatusBadge(product: Product) {
-  if (!product.isActive) {
-    return <Badge variant="secondary">Inactive</Badge>;
-  }
-  if (product.stock === 0) {
-    return (
-      <Badge className="bg-red-100 text-red-700 border-red-200 hover:bg-red-100">
-        Out of Stock
-      </Badge>
-    );
-  }
-  if (product.stock <= 10) {
-    return (
-      <Badge className="bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-100">
-        Low Stock
-      </Badge>
-    );
-  }
-  return (
-    <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
-      Active
-    </Badge>
-  );
+// ─── Status Logic ────────────────────────────────────────────────
+
+function getProductStatus(product: Product): { variant: "active" | "inactive" | "low-stock" | "out-of-stock"; label: string } {
+  if (!product.isActive) return { variant: "inactive", label: "Inactive" };
+  if (product.stock === 0) return { variant: "out-of-stock", label: "Out of Stock" };
+  if (product.stock <= 10) return { variant: "low-stock", label: "Low Stock" };
+  return { variant: "active", label: "Active" };
 }
+
+// ─── Page ────────────────────────────────────────────────────────
 
 export default function ProductsPage() {
   const router = useRouter();
@@ -112,9 +101,10 @@ export default function ProductsPage() {
   const [deactivateId, setDeactivateId] = useState<number | null>(null);
   const debounceTimer = useRef<ReturnType<typeof setTimeout>>(null);
 
-  const fetchProducts = useCallback(async (page: number) => {
+  const fetchProducts = useCallback(async (page: number, pageSize = 20) => {
+    setLoading(true);
     try {
-      const res = await fetch(`/api/products?page=${page}&pageSize=20`);
+      const res = await fetch(`/api/products?page=${page}&pageSize=${pageSize}`);
       const data = await res.json();
       setProducts(data.products);
       setPagination(data.pagination);
@@ -126,6 +116,7 @@ export default function ProductsPage() {
   }, []);
 
   const searchProducts = useCallback(async (query: string) => {
+    setLoading(true);
     try {
       const res = await fetch(`/api/products/search?q=${encodeURIComponent(query)}`);
       const data = await res.json();
@@ -160,9 +151,7 @@ export default function ProductsPage() {
 
   function handleSearchChange(value: string) {
     setSearchQuery(value);
-    setLoading(true);
     if (debounceTimer.current) clearTimeout(debounceTimer.current);
-
     if (value.trim() === '') {
       fetchProducts(1);
       return;
@@ -178,9 +167,7 @@ export default function ProductsPage() {
         setProducts((prev) =>
           prev.map((p) => (p.id === deactivateId ? { ...p, isActive: false } : p))
         );
-        toast.success('Product deactivated', {
-          description: 'The product has been marked as inactive.',
-        });
+        toast.success('Product deactivated');
       }
     } catch {
       toast.error('Failed to deactivate product');
@@ -193,39 +180,47 @@ export default function ProductsPage() {
     ? products
     : products.filter((p) => p.categoryId === Number(categoryFilter));
 
+  const activeFilters = [
+    searchQuery && { label: 'Search: "' + searchQuery + '"', onClear: () => { setSearchQuery(''); fetchProducts(1); } },
+    categoryFilter !== 'all' && {
+      label: categories.find((c) => c.id === Number(categoryFilter))?.name || categoryFilter,
+      onClear: () => setCategoryFilter('all'),
+    },
+  ].filter(Boolean) as { label: string; onClear: () => void }[];
+
   const columns: ColumnDef<Product, unknown>[] = useMemo(
     () => [
       {
         accessorKey: 'name',
-        header: 'Name',
+        header: 'Product',
         cell: ({ row }) => (
-          <div>
-            <p className="font-medium text-foreground">{row.original.name}</p>
-            <p className="text-xs text-muted-foreground sm:hidden">{row.original.sku}</p>
+          <div className="flex items-center gap-3">
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-muted text-xs font-semibold text-muted-foreground">
+              {row.original.name.charAt(0)}
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-foreground truncate max-w-[200px]">
+                {row.original.name}
+              </p>
+              <p className="text-xs text-muted-foreground font-mono">{row.original.sku}</p>
+            </div>
           </div>
         ),
       },
       {
-        accessorKey: 'sku',
-        header: 'SKU',
-        cell: ({ getValue }) => (
-          <span className="font-mono text-xs text-muted-foreground">
-            {getValue() as string}
-          </span>
-        ),
-        meta: { className: 'hidden sm:table-cell' },
-      },
-      {
-        id: 'category',
+        accessorKey: 'category',
         header: 'Category',
         accessorFn: (row) => row.category?.name || '—',
+        cell: ({ getValue }) => (
+          <span className="text-sm text-muted-foreground">{getValue() as string}</span>
+        ),
         meta: { className: 'hidden md:table-cell' },
       },
       {
         accessorKey: 'price',
         header: () => <div className="text-right">Price</div>,
         cell: ({ getValue }) => (
-          <div className="text-right font-medium">
+          <div className="text-right text-sm font-semibold tabular-nums">
             ${Number(getValue() as string).toFixed(2)}
           </div>
         ),
@@ -237,9 +232,9 @@ export default function ProductsPage() {
           const stock = getValue() as number;
           return (
             <div className={cn(
-              'text-right',
-              stock === 0 && 'text-red-600 font-medium',
-              stock > 0 && stock <= 10 && 'text-amber-600 font-medium'
+              'text-right text-sm font-medium tabular-nums',
+              stock === 0 && 'text-red-600',
+              stock > 0 && stock <= 10 && 'text-amber-600'
             )}>
               {stock}
             </div>
@@ -250,7 +245,10 @@ export default function ProductsPage() {
       {
         id: 'status',
         header: 'Status',
-        cell: ({ row }) => getStatusBadge(row.original),
+        cell: ({ row }) => {
+          const { variant, label } = getProductStatus(row.original);
+          return <StatusBadge variant={variant} label={label} />;
+        },
       },
       {
         id: 'actions',
@@ -261,14 +259,17 @@ export default function ProductsPage() {
             <DropdownMenu>
               <DropdownMenuTrigger
                 className={cn(
-                  'inline-flex items-center justify-center size-8 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer'
+                  'inline-flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground transition-colors',
+                  'hover:bg-accent hover:text-accent-foreground',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/30',
+                  'opacity-0 group-hover:opacity-100'
                 )}
               >
                 <MoreHorizontal className="h-4 w-4" />
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
+              <DropdownMenuContent align="end" className="w-40">
                 <DropdownMenuItem
-                  onClick={() => router.push(`/admin/products/${product.id}/edit`)}
+                  onClick={(e) => { e.stopPropagation(); router.push(`/admin/products/${product.id}/edit`); }}
                 >
                   <Pencil className="mr-2 h-4 w-4" />
                   Edit
@@ -278,7 +279,7 @@ export default function ProductsPage() {
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       className="text-red-600 focus:text-red-600"
-                      onClick={() => setDeactivateId(product.id)}
+                      onClick={(e) => { e.stopPropagation(); setDeactivateId(product.id); }}
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
                       Deactivate
@@ -296,8 +297,8 @@ export default function ProductsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
+      {/* Page Header */}
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-foreground">
             Products
@@ -306,25 +307,39 @@ export default function ProductsPage() {
             Manage your product catalog
           </p>
         </div>
-        <Link href="/admin/products/new" className={buttonVariants()}>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Product
-        </Link>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => fetchProducts(pagination.page, pagination.pageSize)}
+          >
+            <RefreshCw className={cn("mr-2 h-3.5 w-3.5", loading && "animate-spin")} />
+            Refresh
+          </Button>
+          <Link href="/admin/products/new" className={buttonVariants({ size: 'sm' })}>
+            <Plus className="mr-1.5 h-3.5 w-3.5" />
+            Add Product
+          </Link>
+        </div>
       </div>
 
-      {/* Filters */}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      {/* Toolbar */}
+      <div className="flex flex-col gap-3 rounded-xl border border-border/60 bg-card p-4 shadow-sm sm:flex-row sm:items-center">
+        {/* Search */}
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
           <Input
-            placeholder="Search by name or SKU..."
+            placeholder="Search products..."
             value={searchQuery}
             onChange={(e) => handleSearchChange(e.target.value)}
-            className="pl-9"
+            className="h-9 pl-9 pr-4 text-sm bg-background"
           />
         </div>
+
+        {/* Category Filter */}
         <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v ?? 'all')}>
-          <SelectTrigger className="w-full sm:w-48">
+          <SelectTrigger className="h-9 w-full sm:w-44 text-sm">
+            <Filter className="mr-2 h-3.5 w-3.5 text-muted-foreground/60" />
             <SelectValue placeholder="All Categories" />
           </SelectTrigger>
           <SelectContent>
@@ -336,45 +351,59 @@ export default function ProductsPage() {
             ))}
           </SelectContent>
         </Select>
+
+        <Separator orientation="vertical" className="hidden sm:block h-6" />
+
+        {/* Export */}
+        <Button variant="outline" size="sm" className="h-9">
+          <Download className="mr-1.5 h-3.5 w-3.5" />
+          Export
+        </Button>
       </div>
 
-      {/* DataTable */}
+      {/* Active Filter Chips */}
+      {activeFilters.length > 0 && (
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground">Filters:</span>
+          {activeFilters.map((filter) => (
+            <button
+              key={filter.label}
+              onClick={filter.onClear}
+              className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-muted/50 px-2.5 py-1 text-xs font-medium text-foreground transition-colors hover:bg-muted"
+            >
+              {filter.label}
+              <span className="ml-0.5 text-muted-foreground">&times;</span>
+            </button>
+          ))}
+          <button
+            onClick={() => { setSearchQuery(''); setCategoryFilter('all'); fetchProducts(1); }}
+            className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
+          >
+            Clear all
+          </button>
+        </div>
+      )}
+
+      {/* Data Table */}
       <DataTable
         columns={columns}
         data={filteredProducts}
         loading={loading}
-        skeletonRows={5}
+        skeletonRows={8}
+        onRowClick={(product) => router.push(`/admin/products/${product.id}/edit`)}
       />
 
       {/* Pagination */}
-      {pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Page {pagination.page} of {pagination.totalPages}
-            <span className="hidden sm:inline"> · {pagination.total} products</span>
-          </p>
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => fetchProducts(pagination.page - 1)}
-              disabled={pagination.page === 1}
-            >
-              <ChevronLeft className="h-4 w-4" />
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => fetchProducts(pagination.page + 1)}
-              disabled={pagination.page === pagination.totalPages}
-            >
-              Next
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        </div>
-      )}
+      <div className="rounded-xl border border-border/60 bg-card shadow-sm">
+        <DataTablePagination
+          page={pagination.page}
+          totalPages={pagination.totalPages}
+          total={pagination.total}
+          pageSize={pagination.pageSize}
+          onPageChange={(p) => fetchProducts(p, pagination.pageSize)}
+          onPageSizeChange={(size) => fetchProducts(1, size)}
+        />
+      </div>
 
       {/* Deactivate Confirmation */}
       <AlertDialog open={deactivateId !== null} onOpenChange={() => setDeactivateId(null)}>
@@ -382,8 +411,7 @@ export default function ProductsPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Deactivate Product</AlertDialogTitle>
             <AlertDialogDescription>
-              Are you sure you want to deactivate this product? It will no longer
-              appear in the product list for cashiers.
+              This product will no longer appear in the POS terminal for cashiers.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
