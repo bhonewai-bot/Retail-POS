@@ -1,10 +1,15 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent } from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
+import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectContent,
@@ -12,23 +17,27 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
+
+const productSchema = z.object({
+  name: z.string().min(1, 'Name is required'),
+  sku: z.string().min(1, 'SKU is required'),
+  description: z.string().optional(),
+  price: z.coerce.number().min(0.01, 'Price must be greater than 0'),
+  cost: z.coerce.number().min(0).optional().or(z.literal('')),
+  categoryId: z.string().optional(),
+  stock: z.coerce.number().min(0).optional(),
+  lowStockThreshold: z.coerce.number().min(0).optional(),
+  barcode: z.string().optional(),
+  isActive: z.boolean(),
+});
+
+type ProductFormData = z.infer<typeof productSchema>;
 
 interface Category {
   id: number;
   name: string;
-}
-
-interface ProductFormData {
-  name: string;
-  sku: string;
-  description: string;
-  price: string;
-  cost: string;
-  categoryId: string;
-  stock: string;
-  lowStockThreshold: string;
-  barcode: string;
-  isActive: boolean;
 }
 
 interface ProductFormProps {
@@ -36,207 +45,274 @@ interface ProductFormProps {
   productId?: string;
   initialData?: ProductFormData;
   categories: Category[];
-  error: string;
-  submitting: boolean;
-  onSubmit: (e: React.FormEvent) => void;
-  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
-  onCategoryChange: (value: string) => void;
-  onActiveChange: (checked: boolean) => void;
 }
 
-export function ProductForm({
-  mode,
-  initialData,
-  categories,
-  error,
-  submitting,
-  onSubmit,
-  onChange,
-  onCategoryChange,
-  onActiveChange,
-}: ProductFormProps) {
+export function ProductForm({ mode, productId, initialData, categories }: ProductFormProps) {
   const router = useRouter();
-  const data = initialData || {
-    name: '',
-    sku: '',
-    description: '',
-    price: '0',
-    cost: '',
-    categoryId: '',
-    stock: '0',
-    lowStockThreshold: '10',
-    barcode: '',
-    isActive: true,
-  };
+  const isSubmitting = false;
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isSubmitting: formSubmitting },
+  } = useForm<ProductFormData>({
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(productSchema) as any,
+    defaultValues: initialData || {
+      name: '',
+      sku: '',
+      description: '',
+      price: 0,
+      cost: '',
+      categoryId: '',
+      stock: 0,
+      lowStockThreshold: 10,
+      barcode: '',
+      isActive: true,
+    },
+  });
+
+  const isActive = watch('isActive');
+
+  async function onSubmit(data: ProductFormData) {
+    const body = {
+      name: data.name.trim(),
+      sku: data.sku.trim(),
+      description: data.description || undefined,
+      price: data.price,
+      cost: data.cost || undefined,
+      categoryId: data.categoryId ? Number(data.categoryId) : undefined,
+      stock: data.stock ?? 0,
+      lowStockThreshold: data.lowStockThreshold ?? 10,
+      barcode: data.barcode || undefined,
+      isActive: data.isActive,
+    };
+
+    try {
+      const url =
+        mode === 'create'
+          ? '/api/products'
+          : `/api/products/${productId}`;
+
+      const res = await fetch(url, {
+        method: mode === 'create' ? 'POST' : 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+
+      const result = await res.json();
+
+      if (res.status === 409) {
+        toast.error('SKU already exists', {
+          description: 'A product with this SKU is already in the system.',
+        });
+        return;
+      }
+
+      if (!res.ok) {
+        toast.error(result.error || 'Something went wrong');
+        return;
+      }
+
+      const verb = mode === 'create' ? 'created' : 'updated';
+      toast.success('Product ' + verb, {
+        description: data.name + ' has been ' + verb + ' in your catalog.',
+      });
+      router.push('/admin/products');
+    } catch {
+      toast.error('Something went wrong. Please try again.');
+    }
+  }
 
   return (
-    <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-foreground mb-6">
-        {mode === 'create' ? 'New Product' : 'Edit Product'}
-      </h1>
-
-      <Card>
-        <CardContent className="pt-6">
-          {error && (
-            <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-md text-sm mb-6">
-              {error}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+      {/* Basic Info */}
+      <div>
+        <h3 className="text-lg font-semibold text-foreground mb-1">Basic Information</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Core product details for your catalog
+        </p>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="name">Name *</Label>
+                <Input
+                  id="name"
+                  placeholder="e.g. Organic Whole Milk"
+                  {...register('name')}
+                />
+                {errors.name && (
+                  <p className="text-sm text-destructive">{errors.name.message}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sku">SKU *</Label>
+                <Input
+                  id="sku"
+                  placeholder="e.g. PROD-001"
+                  {...register('sku')}
+                />
+                {errors.sku && (
+                  <p className="text-sm text-destructive">{errors.sku.message}</p>
+                )}
+              </div>
+              <div className="space-y-2 sm:col-span-2">
+                <Label htmlFor="description">Description</Label>
+                <textarea
+                  id="description"
+                  rows={3}
+                  placeholder="Optional product description"
+                  className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                  {...register('description')}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="categoryId">Category</Label>
+                <Select
+                  value={watch('categoryId') || ''}
+                  onValueChange={(v) => setValue('categoryId', (!v || v === 'none') ? '' : v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No category</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id.toString()}>
+                        {cat.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="barcode">Barcode</Label>
+                <Input
+                  id="barcode"
+                  placeholder="Optional barcode"
+                  {...register('barcode')}
+                />
+              </div>
             </div>
-          )}
+          </CardContent>
+        </Card>
+      </div>
 
-          <form onSubmit={onSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="name">Name *</Label>
-              <Input
-                id="name"
-                name="name"
-                type="text"
-                required
-                value={data.name}
-                onChange={onChange}
-                placeholder="Product name"
-                className="mt-1"
-              />
-            </div>
+      <Separator />
 
-            <div>
-              <Label htmlFor="sku">SKU *</Label>
-              <Input
-                id="sku"
-                name="sku"
-                type="text"
-                required
-                value={data.sku}
-                onChange={onChange}
-                placeholder="e.g. PROD-001"
-                className="mt-1"
-              />
-            </div>
-
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <textarea
-                id="description"
-                name="description"
-                rows={3}
-                value={data.description}
-                onChange={onChange}
-                placeholder="Optional description"
-                className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="price">Price *</Label>
+      {/* Pricing */}
+      <div>
+        <h3 className="text-lg font-semibold text-foreground mb-1">Pricing</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Set selling price and cost
+        </p>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label htmlFor="price">Selling Price *</Label>
                 <Input
                   id="price"
-                  name="price"
                   type="number"
                   step="0.01"
                   min="0.01"
-                  required
-                  value={data.price}
-                  onChange={onChange}
-                  className="mt-1"
+                  placeholder="0.00"
+                  {...register('price')}
                 />
+                {errors.price && (
+                  <p className="text-sm text-destructive">{errors.price.message}</p>
+                )}
               </div>
-              <div>
-                <Label htmlFor="cost">Cost</Label>
+              <div className="space-y-2">
+                <Label htmlFor="cost">Cost Price</Label>
                 <Input
                   id="cost"
-                  name="cost"
                   type="number"
                   step="0.01"
                   min="0"
-                  value={data.cost}
-                  onChange={onChange}
-                  className="mt-1"
+                  placeholder="0.00"
+                  {...register('cost')}
                 />
               </div>
             </div>
+          </CardContent>
+        </Card>
+      </div>
 
-            <div>
-              <Label htmlFor="categoryId">Category</Label>
-              <Select value={data.categoryId} onValueChange={onCategoryChange}>
-                <SelectTrigger className="mt-1">
-                  <SelectValue placeholder="No category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No category</SelectItem>
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.id} value={cat.id.toString()}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+      <Separator />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div>
+      {/* Inventory */}
+      <div>
+        <h3 className="text-lg font-semibold text-foreground mb-1">Inventory</h3>
+        <p className="text-sm text-muted-foreground mb-4">
+          Stock levels and alert thresholds
+        </p>
+        <Card>
+          <CardContent className="pt-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div className="space-y-2">
                 <Label htmlFor="stock">Stock Quantity</Label>
                 <Input
                   id="stock"
-                  name="stock"
                   type="number"
                   min="0"
-                  value={data.stock}
-                  onChange={onChange}
-                  className="mt-1"
+                  placeholder="0"
+                  {...register('stock')}
                 />
               </div>
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="lowStockThreshold">Low Stock Threshold</Label>
                 <Input
                   id="lowStockThreshold"
-                  name="lowStockThreshold"
                   type="number"
                   min="0"
-                  value={data.lowStockThreshold}
-                  onChange={onChange}
-                  className="mt-1"
+                  placeholder="10"
+                  {...register('lowStockThreshold')}
                 />
+                <p className="text-xs text-muted-foreground">
+                  Alert when stock falls below this number
+                </p>
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="barcode">Barcode</Label>
-              <Input
-                id="barcode"
-                name="barcode"
-                type="text"
-                value={data.barcode}
-                onChange={onChange}
-                placeholder="Optional barcode"
-                className="mt-1"
-              />
-            </div>
+            <Separator className="my-4" />
 
-            <div className="flex items-center gap-2">
-              <input
+            <div className="flex items-center justify-between">
+              <div>
+                <Label htmlFor="isActive">Active Status</Label>
+                <p className="text-sm text-muted-foreground">
+                  {isActive
+                    ? 'This product is visible and available'
+                    : 'This product is hidden from the system'}
+                </p>
+              </div>
+              <Switch
                 id="isActive"
-                name="isActive"
-                type="checkbox"
-                checked={data.isActive}
-                onChange={(e) => onActiveChange(e.target.checked)}
-                className="h-4 w-4 rounded border-input accent-primary"
+                checked={isActive}
+                onCheckedChange={(checked) => setValue('isActive', checked)}
               />
-              <Label htmlFor="isActive" className="text-sm font-normal">Active</Label>
             </div>
+          </CardContent>
+        </Card>
+      </div>
 
-            <div className="flex gap-3 pt-4">
-              <Button type="submit" disabled={submitting}>
-                {submitting
-                  ? mode === 'create' ? 'Creating...' : 'Saving...'
-                  : mode === 'create' ? 'Create Product' : 'Save Changes'}
-              </Button>
-              <Button type="button" variant="outline" onClick={() => router.push('/admin/products')}>
-                Cancel
-              </Button>
-            </div>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+      {/* Actions */}
+      <div className="flex items-center justify-end gap-3">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={() => router.push('/admin/products')}
+        >
+          Cancel
+        </Button>
+        <Button type="submit" disabled={formSubmitting}>
+          {formSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {mode === 'create' ? 'Create Product' : 'Save Changes'}
+        </Button>
+      </div>
+    </form>
   );
 }

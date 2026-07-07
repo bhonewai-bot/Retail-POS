@@ -6,19 +6,19 @@ import { authClient } from '@/lib/auth-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { toast } from 'sonner';
+import { Loader2 } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
 
     try {
       const { error: signInError } = await authClient.signIn.email({
@@ -27,7 +27,9 @@ export default function LoginPage() {
       });
 
       if (signInError) {
-        setError('Invalid email or password');
+        toast.error('Invalid credentials', {
+          description: 'Please check your email and password.',
+        });
         setLoading(false);
         return;
       }
@@ -40,68 +42,70 @@ export default function LoginPage() {
         router.push('/pos');
       }
     } catch {
-      setError('Something went wrong. Please try again.');
+      toast.error('Something went wrong', {
+        description: 'Please try again later.',
+      });
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <h1 className="text-center text-3xl font-bold text-foreground">
-          Retail POS
-        </h1>
-        <h2 className="mt-2 text-center text-sm text-muted-foreground">
-          Sign in to your account
-        </h2>
-      </div>
+    <div className="flex min-h-screen items-center justify-center bg-background px-4">
+      <div className="w-full max-w-sm space-y-8">
+        {/* Brand */}
+        <div className="text-center">
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground text-lg font-bold mb-4">
+            R
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground">
+            Retail POS
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Sign in to your account
+          </p>
+        </div>
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <Card className="py-8 px-4 sm:rounded-lg sm:px-10">
-          <CardContent>
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              {error && (
-                <div className="bg-destructive/10 border border-destructive/20 text-destructive px-4 py-3 rounded-md text-sm">
-                  {error}
-                </div>
-              )}
-
-              <div>
-                <Label htmlFor="email">Email address</Label>
+        {/* Form Card */}
+        <Card className="border-border/50 shadow-lg">
+          <CardContent className="pt-6">
+            <form className="space-y-4" onSubmit={handleSubmit}>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
-                  name="email"
                   type="email"
                   autoComplete="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email address"
-                  className="mt-1"
+                  placeholder="you@example.com"
                 />
               </div>
 
-              <div>
+              <div className="space-y-2">
                 <Label htmlFor="password">Password</Label>
                 <Input
                   id="password"
-                  name="password"
                   type="password"
                   autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Password"
-                  className="mt-1"
+                  placeholder="Enter your password"
                 />
               </div>
 
               <Button type="submit" disabled={loading} className="w-full">
-                {loading ? 'Signing in...' : 'Sign in'}
+                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Sign in
               </Button>
             </form>
           </CardContent>
         </Card>
+
+        <p className="text-center text-xs text-muted-foreground">
+          Demo: admin@demo.com / cashier@demo.com · password: demo1234
+        </p>
       </div>
     </div>
   );

@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { AppShell } from '@/components/layout/app-shell';
+import { managerNavItems } from '@/components/layout/nav-links';
+import { Loader2 } from 'lucide-react';
 
 interface SessionData {
   user: {
@@ -13,10 +13,6 @@ interface SessionData {
     name: string;
     email: string;
     role: string;
-  };
-  session: {
-    id: string;
-    token: string;
   };
 }
 
@@ -46,7 +42,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         setLoading(false);
       }
     }
-
     fetchSession();
   }, [router]);
 
@@ -54,43 +49,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     try {
       await authClient.signOut();
       router.push('/login');
-    } catch (error) {
-      console.error('Failed to sign out:', error);
+    } catch {
       router.push('/login');
     }
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <p className="text-muted-foreground">Loading...</p>
+      <div className="flex h-screen items-center justify-center bg-background">
+        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
       </div>
     );
   }
 
-  if (!session) {
-    return null;
-  }
+  if (!session) return null;
 
   return (
-    <div className="min-h-screen bg-background">
-      <nav className="bg-card shadow">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16 items-center">
-            <Link href="/admin" className="text-xl font-bold text-foreground">
-              Retail POS
-            </Link>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-foreground">{session.user.name}</span>
-              <Badge variant="secondary">{session.user.role}</Badge>
-              <Button variant="ghost" size="sm" onClick={handleLogout}>
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
-      </nav>
-      <main className="max-w-6xl mx-auto p-8">{children}</main>
-    </div>
+    <AppShell
+      navItems={managerNavItems}
+      user={session.user}
+      onLogout={handleLogout}
+    >
+      {children}
+    </AppShell>
   );
 }

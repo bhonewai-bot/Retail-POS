@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { ProductForm } from '@/components/product-form';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface Category {
   id: number;
@@ -17,22 +18,9 @@ export default function EditProductPage() {
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState('');
   const [notFound, setNotFound] = useState(false);
-
-  const [formData, setFormData] = useState({
-    name: '',
-    sku: '',
-    description: '',
-    price: '',
-    cost: '',
-    categoryId: '',
-    stock: '',
-    lowStockThreshold: '',
-    barcode: '',
-    isActive: true,
-  });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [initialData, setInitialData] = useState<any>(null);
 
   useEffect(() => {
     async function init() {
@@ -47,27 +35,30 @@ export default function EditProductPage() {
           fetch('/api/categories'),
         ]);
 
-        if (productRes.status === 404) { setNotFound(true); return; }
+        if (productRes.status === 404) {
+          setNotFound(true);
+          return;
+        }
 
         const product = await productRes.json();
         const catsData = await categoriesRes.json();
 
-        setFormData({
+        setInitialData({
           name: product.name || '',
           sku: product.sku || '',
           description: product.description || '',
-          price: product.price || '',
-          cost: product.cost || '',
+          price: Number(product.price) || 0,
+          cost: product.cost ? Number(product.cost) : '',
           categoryId: product.categoryId?.toString() || '',
-          stock: product.stock?.toString() || '0',
-          lowStockThreshold: product.lowStockThreshold?.toString() || '10',
+          stock: product.stock ?? 0,
+          lowStockThreshold: product.lowStockThreshold ?? 10,
           barcode: product.barcode || '',
           isActive: product.isActive ?? true,
         });
 
         setCategories(catsData.categories || []);
       } catch {
-        setError('Failed to load product');
+        setNotFound(true);
       } finally {
         setLoading(false);
       }
@@ -75,78 +66,47 @@ export default function EditProductPage() {
     init();
   }, [router, productId]);
 
-  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
-    }));
-  }
-
-  function handleCategoryChange(value: string) {
-    setFormData((prev) => ({ ...prev, categoryId: value === 'none' ? '' : value }));
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError('');
-
-    if (!formData.name.trim()) { setError('Name is required'); return; }
-    if (!formData.sku.trim()) { setError('SKU is required'); return; }
-    if (Number(formData.price) <= 0) { setError('Price must be greater than 0'); return; }
-
-    setSubmitting(true);
-    try {
-      const body = {
-        name: formData.name.trim(),
-        sku: formData.sku.trim(),
-        description: formData.description || undefined,
-        price: Number(formData.price),
-        cost: formData.cost ? Number(formData.cost) : undefined,
-        categoryId: formData.categoryId ? Number(formData.categoryId) : undefined,
-        stock: Number(formData.stock),
-        lowStockThreshold: Number(formData.lowStockThreshold),
-        barcode: formData.barcode || undefined,
-        isActive: formData.isActive,
-      };
-
-      const res = await fetch(`/api/products/${productId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
-      });
-
-      const data = await res.json();
-      if (res.status === 409) { setError('SKU already exists'); return; }
-      if (!res.ok) { setError(data.error || 'Failed to update product'); return; }
-      router.push('/admin/products');
-    } catch {
-      setError('Something went wrong');
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
   if (loading) {
-    return <div className="flex items-center justify-center py-12"><p className="text-muted-foreground">Loading...</p></div>;
+    return (
+      <div className="space-y-6 max-w-3xl">
+        <div>
+          <Skeleton className="h-8 w-48 mb-2" />
+          <Skeleton className="h-4 w-72" />
+        </div>
+        <Skeleton className="h-64 w-full rounded-lg" />
+      </div>
+    );
   }
 
   if (notFound) {
-    return <div className="text-center py-12"><p className="text-muted-foreground">Product not found</p></div>;
+    return (
+      <div className="flex flex-col items-center justify-center py-24 text-center">
+        <p className="text-lg font-medium text-foreground">Product not found</p>
+        <p className="text-sm text-muted-foreground mt-1">
+          The product you&apos;re looking for doesn&apos;t exist.
+        </p>
+      </div>
+    );
   }
 
   return (
-    <ProductForm
-      mode="edit"
-      productId={productId as string}
-      initialData={formData}
-      categories={categories}
-      error={error}
-      submitting={submitting}
-      onSubmit={handleSubmit}
-      onChange={handleChange}
-      onCategoryChange={handleCategoryChange}
-      onActiveChange={(checked) => setFormData((prev) => ({ ...prev, isActive: checked }))}
-    />
+    <div className="max-w-3xl">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">
+          Edit Product
+        </h1>
+        <p className="text-sm text-muted-foreground">
+          Update product information
+        </p>
+      </div>
+      {initialData && (
+        <ProductForm
+          mode="edit"
+          productId={productId as string}
+          initialData={initialData}
+          categories={categories}
+        />
+      )}
+    </div>
   );
 }
