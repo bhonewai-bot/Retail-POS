@@ -11,7 +11,8 @@
     "db:studio": "prisma studio",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
-    "seed:auth": "tsx scripts/seed-auth.ts"
+    "seed:auth": "tsx scripts/seed-auth.ts",
+    "db:seed:categories": "tsx scripts/seed-categories.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
