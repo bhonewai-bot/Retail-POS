@@ -75,19 +75,21 @@ Plans:
 
 **Goal**: Managers can monitor stock levels and receive low-stock alerts
 **Depends on**: Phase 2
-**Requirements**: INV-01, INV-02, INV-03
+**Requirements**: INV-01, INV-02
 **Success Criteria** (what must be TRUE):
 
   1. System displays current stock quantity for each product
   2. Visual alerts appear when stock falls below threshold
-  3. Manager can manually adjust inventory quantities (receive stock, mark damage, etc.)
-  4. Inventory changes are logged with timestamps and reasons
 
 **Plans**: 2 plans
 
 Plans:
+**Wave 1**
 
 - [ ] 03-01-PLAN.md — Inventory API: /api/inventory endpoint with stock-level data, low-stock filter, and search
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
 - [ ] 03-02-PLAN.md — Inventory admin UI: stock monitoring page with status badges, low-stock toggle, and search
 
 ### Phase 4: Inventory Adjustments
