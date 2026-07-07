@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
 
 interface SessionData {
@@ -17,7 +18,7 @@ interface SessionData {
   };
 }
 
-export default function AdminPage() {
+export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [session, setSession] = useState<SessionData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +31,6 @@ export default function AdminPage() {
           router.push('/login');
           return;
         }
-        // Role-based access: only managers can access admin
         const user = data.user as Record<string, unknown>;
         if (user?.role !== 'manager') {
           router.push('/pos');
@@ -72,34 +72,28 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-4xl mx-auto p-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Admin Dashboard</h1>
-
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <p className="text-gray-700 mb-2">
-            Logged in as <span className="font-semibold">{session.user.name}</span>{' '}
-            (<span className="text-sm text-gray-500">{session.user.role}</span>)
-          </p>
-          <p className="text-sm text-gray-500 italic">Manager-only area</p>
+      <nav className="bg-white shadow">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between h-16 items-center">
+            <Link href="/admin" className="text-xl font-bold text-gray-900">
+              Retail POS
+            </Link>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-700">{session.user.name}</span>
+              <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">
+                {session.user.role}
+              </span>
+              <button
+                onClick={handleLogout}
+                className="text-sm text-red-600 hover:text-red-800 cursor-pointer"
+              >
+                Logout
+              </button>
+            </div>
+          </div>
         </div>
-
-        <div className="bg-white rounded-lg shadow p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Quick Actions</h2>
-          <a
-            href="/admin/products"
-            className="inline-block bg-blue-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-blue-700"
-          >
-            Manage Products
-          </a>
-        </div>
-
-        <button
-          onClick={handleLogout}
-          className="bg-red-600 text-white px-4 py-2 rounded cursor-pointer hover:bg-red-700"
-        >
-          Logout
-        </button>
-      </div>
+      </nav>
+      <main className="max-w-6xl mx-auto p-8">{children}</main>
     </div>
   );
 }
