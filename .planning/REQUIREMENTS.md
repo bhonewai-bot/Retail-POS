@@ -30,11 +30,11 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Checkout
 
-- [ ] **CHECK-01**: Cashier can add products to cart by SKU/name
-- [ ] **CHECK-02**: Cart shows items with quantities and prices
-- [ ] **CHECK-03**: System calculates subtotal, tax, and total
-- [ ] **CHECK-04**: Cashier can complete transaction (simulated payment)
-- [ ] **CHECK-05**: Transaction creates order with line items
+- [ ] **CHECK-01**: Cashier can add products to cart by SKU/name — POS terminal UI built
+- [ ] **CHECK-02**: Cart shows items with quantities and prices — POS terminal UI built
+- [ ] **CHECK-03**: System calculates subtotal, tax, and total — POS terminal UI built
+- [ ] **CHECK-04**: Cashier can complete transaction (simulated payment) — POS terminal UI built
+- [ ] **CHECK-05**: Transaction creates order with line items — Plan 05-01
 
 ### Transaction History
 
@@ -98,11 +98,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | INV-01 | Phase 3 | Complete |
 | INV-02 | Phase 3 | Complete |
 | INV-03 | Phase 4 | Complete |
-| CHECK-01 | Phase 5 | Pending |
-| CHECK-02 | Phase 5 | Pending |
-| CHECK-03 | Phase 5 | Pending |
-| CHECK-04 | Phase 5 | Pending |
-| CHECK-05 | Phase 5 | Pending |
+| CHECK-01 | Phase 5 | Ready |
+| CHECK-02 | Phase 5 | Ready |
+| CHECK-03 | Phase 5 | Ready |
+| CHECK-04 | Phase 5 | Ready |
+| CHECK-05 | Phase 5 | Ready |
 | INV-04 | Phase 6 | Pending |
 | TRANS-01 | Phase 7 | Pending |
 | TRANS-02 | Phase 7 | Pending |

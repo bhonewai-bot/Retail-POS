@@ -128,11 +128,11 @@ Plans:
   4. Cashier can complete transaction with simulated payment (cash, card placeholder)
   5. Completed transaction creates order record with all line items
 
-**Plans**: TBD
+**Plans**: 1/1 plans complete
 
 Plans:
 
-- [ ] 05-01: TBD
+- [x] 05-01-PLAN.md — Orders API endpoint and POS terminal order creation integration
 
 ### Phase 6: Atomic Transactions
 
@@ -199,7 +199,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 2. Product Management | 2/2 | Complete | 2026-07-07 |
 | 3. Inventory Tracking | 2/2 | Complete    | 2026-07-07 |
 | 4. Inventory Adjustments | 2/2 | Complete    | 2026-07-07 |
-| 5. Checkout Flow | 0/TBD | Not started | - |
+| 5. Checkout Flow | 1/1 | Ready | - |
 | 6. Atomic Transactions | 0/TBD | Not started | - |
 | 7. Transaction History | 0/TBD | Not started | - |
 | 8. Receipt Generation | 0/TBD | Not started | - |
