@@ -23,8 +23,8 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Inventory
 
-- [ ] **INV-01**: Inventory tracks stock quantity per product
-- [ ] **INV-02**: Low-stock alerts when quantity falls below threshold
+- [x] **INV-01**: Inventory tracks stock quantity per product
+- [x] **INV-02**: Low-stock alerts when quantity falls below threshold
 - [ ] **INV-03**: Manager can adjust inventory (receive stock, damage, etc.)
 - [ ] **INV-04**: Inventory decrements atomically on sale
 
@@ -95,8 +95,8 @@ Which phases cover which requirements. Updated during roadmap creation.
 | PROD-03 | Phase 2 | Pending |
 | PROD-04 | Phase 2 | Pending |
 | SEARCH-01 | Phase 2 | Pending |
-| INV-01 | Phase 3 | Pending |
-| INV-02 | Phase 3 | Pending |
+| INV-01 | Phase 3 | Complete |
+| INV-02 | Phase 3 | Complete |
 | INV-03 | Phase 4 | Pending |
 | CHECK-01 | Phase 5 | Pending |
 | CHECK-02 | Phase 5 | Pending |
