@@ -1,23 +1,16 @@
 'use client';
 
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import type { ColumnDef } from '@tanstack/react-table';
 import { authClient } from '@/lib/auth-client';
-import { Button, buttonVariants } from '@/components/ui/button';
+import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -76,6 +69,31 @@ interface Pagination {
   pageSize: number;
   totalPages: number;
   total: number;
+}
+
+function getStatusBadge(product: Product) {
+  if (!product.isActive) {
+    return <Badge variant="secondary">Inactive</Badge>;
+  }
+  if (product.stock === 0) {
+    return (
+      <Badge className="bg-red-100 text-red-700 border-red-200 hover:bg-red-100">
+        Out of Stock
+      </Badge>
+    );
+  }
+  if (product.stock <= 10) {
+    return (
+      <Badge className="bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-100">
+        Low Stock
+      </Badge>
+    );
+  }
+  return (
+    <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
+      Active
+    </Badge>
+  );
 }
 
 export default function ProductsPage() {
@@ -171,35 +189,110 @@ export default function ProductsPage() {
     }
   }
 
-  // Client-side category filter
   const filteredProducts = categoryFilter === 'all'
     ? products
     : products.filter((p) => p.categoryId === Number(categoryFilter));
 
-  function getStatusBadge(product: Product) {
-    if (!product.isActive) {
-      return <Badge variant="secondary">Inactive</Badge>;
-    }
-    if (product.stock === 0) {
-      return (
-        <Badge className="bg-red-100 text-red-700 border-red-200 hover:bg-red-100">
-          Out of Stock
-        </Badge>
-      );
-    }
-    if (product.stock <= 10) {
-      return (
-        <Badge className="bg-amber-100 text-amber-700 border-amber-200 hover:bg-amber-100">
-          Low Stock
-        </Badge>
-      );
-    }
-    return (
-      <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 hover:bg-emerald-100">
-        Active
-      </Badge>
-    );
-  }
+  const columns: ColumnDef<Product, unknown>[] = useMemo(
+    () => [
+      {
+        accessorKey: 'name',
+        header: 'Name',
+        cell: ({ row }) => (
+          <div>
+            <p className="font-medium text-foreground">{row.original.name}</p>
+            <p className="text-xs text-muted-foreground sm:hidden">{row.original.sku}</p>
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'sku',
+        header: 'SKU',
+        cell: ({ getValue }) => (
+          <span className="font-mono text-xs text-muted-foreground">
+            {getValue() as string}
+          </span>
+        ),
+        meta: { className: 'hidden sm:table-cell' },
+      },
+      {
+        id: 'category',
+        header: 'Category',
+        accessorFn: (row) => row.category?.name || '—',
+        meta: { className: 'hidden md:table-cell' },
+      },
+      {
+        accessorKey: 'price',
+        header: () => <div className="text-right">Price</div>,
+        cell: ({ getValue }) => (
+          <div className="text-right font-medium">
+            ${Number(getValue() as string).toFixed(2)}
+          </div>
+        ),
+      },
+      {
+        accessorKey: 'stock',
+        header: () => <div className="text-right">Stock</div>,
+        cell: ({ getValue }) => {
+          const stock = getValue() as number;
+          return (
+            <div className={cn(
+              'text-right',
+              stock === 0 && 'text-red-600 font-medium',
+              stock > 0 && stock <= 10 && 'text-amber-600 font-medium'
+            )}>
+              {stock}
+            </div>
+          );
+        },
+        meta: { className: 'hidden sm:table-cell' },
+      },
+      {
+        id: 'status',
+        header: 'Status',
+        cell: ({ row }) => getStatusBadge(row.original),
+      },
+      {
+        id: 'actions',
+        header: '',
+        cell: ({ row }) => {
+          const product = row.original;
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger
+                className={cn(
+                  'inline-flex items-center justify-center size-8 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer'
+                )}
+              >
+                <MoreHorizontal className="h-4 w-4" />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem
+                  onClick={() => router.push(`/admin/products/${product.id}/edit`)}
+                >
+                  <Pencil className="mr-2 h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
+                {product.isActive && (
+                  <>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="text-red-600 focus:text-red-600"
+                      onClick={() => setDeactivateId(product.id)}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Deactivate
+                    </DropdownMenuItem>
+                  </>
+                )}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      },
+    ],
+    [router]
+  );
 
   return (
     <div className="space-y-6">
@@ -245,128 +338,13 @@ export default function ProductsPage() {
         </Select>
       </div>
 
-      {/* Table */}
-      <Card>
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead>Name</TableHead>
-                <TableHead className="hidden sm:table-cell">SKU</TableHead>
-                <TableHead className="hidden md:table-cell">Category</TableHead>
-                <TableHead className="text-right">Price</TableHead>
-                <TableHead className="text-right hidden sm:table-cell">Stock</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="w-12" />
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                Array.from({ length: 5 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell><Skeleton className="h-4 w-32" /></TableCell>
-                    <TableCell className="hidden sm:table-cell"><Skeleton className="h-4 w-20" /></TableCell>
-                    <TableCell className="hidden md:table-cell"><Skeleton className="h-4 w-24" /></TableCell>
-                    <TableCell className="text-right"><Skeleton className="h-4 w-16 ml-auto" /></TableCell>
-                    <TableCell className="text-right hidden sm:table-cell"><Skeleton className="h-4 w-8 ml-auto" /></TableCell>
-                    <TableCell><Skeleton className="h-5 w-16" /></TableCell>
-                    <TableCell><Skeleton className="h-4 w-4" /></TableCell>
-                  </TableRow>
-                ))
-              ) : filteredProducts.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="h-48">
-                    <div className="flex flex-col items-center justify-center text-center">
-                      <Package className="h-12 w-12 text-muted-foreground/40 mb-4" />
-                      <p className="text-sm font-medium text-foreground mb-1">
-                        {searchQuery ? 'No products match your search' : 'No products found'}
-                      </p>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {searchQuery
-                          ? 'Try a different search term'
-                          : 'Add your first product to get started'}
-                      </p>
-                      {!searchQuery && (
-                        <Link href="/admin/products/new" className={buttonVariants({ size: "sm" })}>
-                          <Plus className="mr-2 h-4 w-4" />
-                          Add Product
-                        </Link>
-                      )}
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredProducts.map((product) => (
-                  <TableRow key={product.id} className="group">
-                    <TableCell>
-                      <div>
-                        <p className="font-medium text-foreground">{product.name}</p>
-                        <p className="text-xs text-muted-foreground sm:hidden">{product.sku}</p>
-                      </div>
-                    </TableCell>
-                    <TableCell className="hidden sm:table-cell font-mono text-xs text-muted-foreground">
-                      {product.sku}
-                    </TableCell>
-                    <TableCell className="hidden md:table-cell text-muted-foreground">
-                      {product.category?.name || '—'}
-                    </TableCell>
-                    <TableCell className="text-right font-medium">
-                      ${Number(product.price).toFixed(2)}
-                    </TableCell>
-                    <TableCell className="text-right hidden sm:table-cell">
-                      <span
-                        className={
-                          product.stock === 0
-                            ? 'text-red-600 font-medium'
-                            : product.stock <= 10
-                            ? 'text-amber-600 font-medium'
-                            : 'text-foreground'
-                        }
-                      >
-                        {product.stock}
-                      </span>
-                    </TableCell>
-                    <TableCell>{getStatusBadge(product)}</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger
-                          className={cn(
-                            "inline-flex items-center justify-center size-8 rounded-md text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                          )}
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuItem
-                            onClick={() =>
-                              router.push(`/admin/products/${product.id}/edit`)
-                            }
-                          >
-                            <Pencil className="mr-2 h-4 w-4" />
-                            Edit
-                          </DropdownMenuItem>
-                          {product.isActive && (
-                            <>
-                              <DropdownMenuSeparator />
-                              <DropdownMenuItem
-                                className="text-red-600 focus:text-red-600"
-                                onClick={() => setDeactivateId(product.id)}
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Deactivate
-                              </DropdownMenuItem>
-                            </>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {/* DataTable */}
+      <DataTable
+        columns={columns}
+        data={filteredProducts}
+        loading={loading}
+        skeletonRows={5}
+      />
 
       {/* Pagination */}
       {pagination.totalPages > 1 && (
