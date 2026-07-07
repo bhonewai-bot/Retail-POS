@@ -20,6 +20,8 @@ Code references like [`lib/prisma.ts`](../../lib/prisma.ts) are clickable.
 - ✅ Foundation — Prisma schema, database client, data models, design system, POS terminal
 - ✅ Authentication — Better Auth, login, role-based access, route protection
 - ✅ Product Management — CRUD API, admin UI, categories, search
+- ✅ Inventory Tracking — Stock levels, low-stock alerts
+- ✅ Inventory Adjustments — Manual adjustments with history
 
 **Not yet implemented:**
 - ❌ Checkout flow (cart, transactions)
@@ -34,7 +36,7 @@ Code references like [`lib/prisma.ts`](../../lib/prisma.ts) are clickable.
 | 2 | [Authentication](02-authentication.md) | ✅ Built | Better Auth, login, role-based access, route protection |
 | 3 | [Product Management](03-product-management.md) | ✅ Built | Product CRUD API, admin UI, categories, search |
 | 4 | [Inventory Tracking](04-inventory-tracking.md) | ✅ Built | Stock levels, low-stock alerts |
-| 5 | Inventory Adjustments | ⏳ Planned | Manual adjustments with history |
+| 5 | [Inventory Adjustments](05-inventory-adjustments.md) | ✅ Built | Manual adjustments with history |
 | 6 | Checkout Flow | ⏳ Planned | Cart, totals, simulated payment |
 | 7 | Atomic Transactions | ⏳ Planned | Race condition handling |
 | 8 | Transaction History | ⏳ Planned | View and filter records |
