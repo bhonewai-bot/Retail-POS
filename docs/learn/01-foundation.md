@@ -121,6 +121,59 @@ export default prisma;
 
 **Why the singleton?** Prevents connection pool exhaustion during Next.js hot-reloads in development.
 
+## Design system (shadcn)
+
+Phase 2 built 9 pages with raw Tailwind CSS. For Phase 3 onward, **shadcn** provides a consistent component library and design token system.
+
+**Setup:**
+```bash
+npx shadcn@latest init --preset b1fyMgCu0e --template next
+```
+
+**Preset details:**
+| Setting | Value |
+|---------|-------|
+| Style | vega (base-vega) |
+| Base color | zinc |
+| Theme | zinc |
+| Chart color | pink |
+| Icon library | Lucide |
+| Font (body) | Inter (`--font-sans`) |
+| Font (headings) | Roboto (`--font-heading`) |
+| Border radius | 0.625rem default |
+
+**Key files:**
+- `components.json` — shadcn configuration (aliases, registry style)
+- `src/app/globals.css` — CSS custom properties (oklch color space, light/dark mode tokens)
+- `src/lib/utils.ts` — `cn()` helper (clsx + twMerge for conditional class names)
+- `src/components/ui/` — shadcn component directory (button installed)
+
+**How the token system works:**
+
+shadcn defines semantic color tokens as CSS variables in `globals.css`:
+
+```
+--background    → page background (white in light, dark in dark mode)
+--foreground    → primary text color
+--card          → card surface background
+--primary       → primary action color (CTAs, focus rings)
+--destructive   → destructive actions (red accent)
+--muted         → secondary surfaces, subtle backgrounds
+--border        → borders and dividers
+```
+
+Components consume these tokens via Tailwind utility classes (`bg-primary`, `text-destructive`, `border-border`) — never raw hex values. This makes theming and dark mode automatic.
+
+**Installed components:**
+
+```bash
+npx shadcn add button   # installed during init
+```
+
+Future components (Phase 3+): `input`, `table`, `badge`, `dialog`, `label`, `select`, `card`, `separator`.
+
+**Transition note:** Existing pages from Phases 1-2 use raw Tailwind classes (`bg-blue-600`, `text-gray-900`). New pages use shadcn tokens (`bg-primary`, `text-foreground`). Both coexist — no migration needed.
+
 ## Not yet implemented
 
 - ❌ Authentication & user management
