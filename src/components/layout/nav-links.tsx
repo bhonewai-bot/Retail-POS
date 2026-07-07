@@ -7,6 +7,7 @@ import {
   Package,
   ShoppingCart,
   Settings,
+  BarChart3,
   type LucideIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -25,6 +26,7 @@ export interface NavItem {
 export const managerNavItems: NavItem[] = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Products", href: "/admin/products", icon: Package },
+  { label: "Inventory", href: "/admin/inventory", icon: BarChart3 },
 ];
 
 export const cashierNavItems: NavItem[] = [
