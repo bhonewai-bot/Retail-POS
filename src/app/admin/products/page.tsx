@@ -258,6 +258,7 @@ export default function ProductsPage() {
         cell: ({ row }) => {
           const product = row.original;
           return (
+            <div onClick={(e) => e.stopPropagation()}>
             <DropdownMenu>
               <DropdownMenuTrigger
                 className={cn(
@@ -290,6 +291,7 @@ export default function ProductsPage() {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
+            </div>
           );
         },
       },
