@@ -50,7 +50,7 @@ Plans:
 
 **Goal**: Managers can create, edit, list, and search products
 **Depends on**: Phase 1
-**Requirements**: PROD-01, PROD-02, PROD-03, PROD-04, SEARCH-01
+**Requirements**: PROD-01, PROD-02, PROD-03, PROD-04, SEARCH-01, SEARCH-02
 **Success Criteria** (what must be TRUE):
 
   1. Manager can create products with name, SKU, price, cost, and category assignment
@@ -58,12 +58,14 @@ Plans:
   3. Manager can deactivate products (mark as unavailable without deleting)
   4. Product list displays with pagination for ~200 products
   5. Products can be searched by name or SKU with instant filtering
+  6. Search results display product info and stock level
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
 
-- [ ] 02-01: TBD
+- [ ] 02-01-PLAN.md — Product API layer: category seed, CRUD endpoints, search endpoint
+- [ ] 02-02-PLAN.md — Admin UI: product list with search, create/edit forms, dashboard nav
 
 ### Phase 3: Inventory Tracking
 
@@ -182,7 +184,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Authentication | 5/5 | Complete    | 2026-07-07 |
-| 2. Product Management | 0/TBD | Not started | - |
+| 2. Product Management | 0/2 | Not started | - |
 | 3. Inventory Tracking | 0/TBD | Not started | - |
 | 4. Inventory Adjustments | 0/TBD | Not started | - |
 | 5. Checkout Flow | 0/TBD | Not started | - |
