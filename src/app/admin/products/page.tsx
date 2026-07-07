@@ -138,8 +138,8 @@ export default function ProductsPage() {
     <div>
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold text-foreground">Products</h1>
-        <Button asChild>
-          <Link href="/admin/products/new">New Product</Link>
+        <Button render={<Link href="/admin/products/new" />}>
+          New Product
         </Button>
       </div>
 

@@ -92,8 +92,8 @@ export default function AdminPage() {
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button asChild>
-              <Link href="/admin/products">Manage Products</Link>
+            <Button render={<Link href="/admin/products" />}>
+              Manage Products
             </Button>
           </CardContent>
         </Card>
