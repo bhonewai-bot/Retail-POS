@@ -27,13 +27,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
 import { PageContainer } from '@/components/dashboard/page-container';
@@ -336,20 +329,18 @@ export default function ProductsPage() {
         </div>
 
         {/* Category Filter */}
-        <Select value={categoryFilter} onValueChange={(v) => setCategoryFilter(v ?? 'all')}>
-          <SelectTrigger className="h-9 w-full sm:w-44 text-sm">
-            <Filter className="mr-2 h-3.5 w-3.5 text-muted-foreground/60" />
-            <SelectValue placeholder="All Categories" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Categories</SelectItem>
-            {categories.map((cat) => (
-              <SelectItem key={cat.id} value={cat.id.toString()}>
-                {cat.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <select
+          value={categoryFilter}
+          onChange={(e) => setCategoryFilter(e.target.value)}
+          className="flex h-9 w-full min-w-0 items-center gap-2 rounded-md border border-input bg-transparent px-2.5 py-1 text-sm shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 sm:w-44"
+        >
+          <option value="all">All Categories</option>
+          {categories.map((cat) => (
+            <option key={cat.id} value={cat.id}>
+              {cat.name}
+            </option>
+          ))}
+        </select>
 
         <Separator orientation="vertical" className="hidden sm:block h-6" />
 
