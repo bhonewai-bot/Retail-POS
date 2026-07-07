@@ -17,7 +17,7 @@ Code references like [`lib/prisma.ts`](../../lib/prisma.ts) are clickable.
 ## Project status
 
 **Completed:**
-- ✅ Foundation — Prisma schema, database client, data models
+- ✅ Foundation — Prisma schema, database client, data models, design system, POS terminal
 - ✅ Authentication — Better Auth, login, role-based access, route protection
 - ✅ Product Management — CRUD API, admin UI, categories, search
 
@@ -31,7 +31,7 @@ Code references like [`lib/prisma.ts`](../../lib/prisma.ts) are clickable.
 
 | # | Chapter | Status | What it delivers |
 |---|---------|--------|------------------|
-| 1 | [Foundation](01-foundation.md) | ✅ Built | Prisma schema, database client, data models |
+| 1 | [Foundation](01-foundation.md) | ✅ Built | Prisma schema, database client, data models, design system, POS terminal |
 | 2 | [Authentication](02-authentication.md) | ✅ Built | Better Auth, login, role-based access, route protection |
 | 3 | [Product Management](03-product-management.md) | ✅ Built | Product CRUD API, admin UI, categories, search |
 | 4 | Inventory Tracking | ⏳ Planned | Stock levels, low-stock alerts |
@@ -46,10 +46,13 @@ Code references like [`lib/prisma.ts`](../../lib/prisma.ts) are clickable.
 ## Tech stack at a glance
 
 - **Framework:** Next.js 16 (App Router) + TypeScript
-- **Styling:** Tailwind CSS 4
+- **Styling:** Tailwind CSS 4 + shadcn/ui (vega/zinc preset)
 - **Database:** PostgreSQL + Prisma 7 (driver adapter)
 - **Auth:** Better Auth (email/password, cookie sessions)
-- **State:** Server Components + Client Components
+- **Tables:** TanStack Table (column-driven DataTable)
+- **Forms:** React Hook Form + Zod validation
+- **Icons:** Lucide React
+- **State:** Server Components + Client Components + useReducer (cart)
 - **Runtime:** Node.js
 
 ## Business context
@@ -77,4 +80,4 @@ This is a **demo project** for practicing full-stack development. It simulates a
 
 ---
 
-*Last updated: 2026-07-07 after authentication phase*
+*Last updated: 2026-07-07 after UI design system and POS terminal*

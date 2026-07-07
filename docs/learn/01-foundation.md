@@ -123,7 +123,7 @@ export default prisma;
 
 ## Design system (shadcn)
 
-Phases 1-2 built pages with raw Tailwind CSS. The UI foundation establishes **shadcn** as the shared component library and design token system for all future pages.
+The UI foundation establishes **shadcn** as the shared component library and a set of reusable dashboard components that keep every page visually consistent as the app grows.
 
 **Setup:**
 ```bash
@@ -136,17 +136,88 @@ npx shadcn@latest init --preset b1fyMgCu0e --template next
 | Style | vega (base-vega) |
 | Base color | zinc |
 | Theme | zinc |
-| Chart color | pink |
 | Icon library | Lucide |
 | Font (body) | Inter (`--font-sans`) |
 | Font (headings) | Roboto (`--font-heading`) |
 | Border radius | 0.625rem default |
+
+**Color tokens** (`src/app/globals.css`):
+```css
+--primary: oklch(0.54 0.19 260)    /* Blue accent */
+--secondary: oklch(0.965 0 0)      /* Light gray */
+--accent: oklch(0.965 0 0)         /* Hover states */
+--destructive: oklch(0.577 0.245 27.325)  /* Red */
+--background: oklch(0.985 0 0)     /* Page bg */
+--card: oklch(1 0 0)               /* Card surfaces */
+--muted: oklch(0.965 0 0)          /* Muted bg */
+--border: oklch(0.92 0 0)          /* Borders */
+```
+
+All components use these tokens via Tailwind classes (`bg-primary`, `text-foreground`, `border-border`) — never raw hex values.
+
+### shadcn components installed
+
+20 components via `npx shadcn add`:
+`alert-dialog`, `avatar`, `badge`, `breadcrumb`, `button`, `card`, `dialog`, `dropdown-menu`, `input`, `label`, `pagination`, `select`, `separator`, `sheet`, `skeleton`, `sonner`, `switch`, `table`, `textarea`, `tooltip`
 
 **Key files:**
 - `components.json` — shadcn configuration (aliases, registry style)
 - `src/app/globals.css` — CSS custom properties (oklch color space, light/dark mode tokens)
 - `src/lib/utils.ts` — `cn()` helper (clsx + twMerge for conditional class names)
 - `src/components/ui/` — shadcn component directory
+
+### Shared dashboard components
+
+Every admin page composes these instead of inventing its own layout:
+
+| Component | File | Purpose |
+|---|---|---|
+| `PageContainer` | `src/components/dashboard/page-container.tsx` | Wraps page content with `space-y-6` spacing |
+| `PageHeader` | `src/components/dashboard/page-header.tsx` | Responsive title + description + actions |
+| `EmptyState` | `src/components/dashboard/empty-state.tsx` | Standardized icon + message + CTA |
+| `LoadingSpinner` | `src/components/dashboard/loading-spinner.tsx` | Centered spinner for full-page loads |
+
+### Page composition pattern
+
+Every admin page follows the same structure:
+
+```tsx
+<PageContainer>
+  <PageHeader title="Products" description="..." actions={<Button>Add</Button>} />
+  <DataTable columns={columns} data={products} loading={loading} />
+  <DataTablePagination page={1} totalPages={10} total={200} pageSize={20} />
+</PageContainer>
+```
+
+### Reusable table components
+
+| Component | File | Purpose |
+|---|---|---|
+| `DataTable` | `src/components/ui/data-table.tsx` | TanStack Table wrapper with column defs, skeletons, empty state |
+| `StatusBadge` | `src/components/ui/data-table.tsx` | 9 status variants with dot indicators |
+| `DataTablePagination` | `src/components/ui/data-table.tsx` | Page numbers, rows-per-page, "Showing X of Y" |
+
+StatusBadge variants: `active`, `inactive`, `low-stock`, `out-of-stock`, `pending`, `completed`, `cancelled`, `draft`, `archived`
+
+### Additional packages
+
+- `@tanstack/react-table` — column-driven table logic
+- `react-hook-form` + `@hookform/resolvers` + `zod` — form validation
+
+### POS Terminal
+
+The POS terminal uses a separate full-screen two-panel layout (no sidebar):
+
+| Component | File | Purpose |
+|---|---|---|
+| POS Terminal | `src/app/pos/page.tsx` | Product grid (65%) + cart panel (35%) |
+| Cart Store | `src/components/pos/cart-store.tsx` | useReducer-based cart state management |
+
+### Gotchas
+
+- **Native `<select>` over shadcn Select:** The base-ui Select (shadcn v4) doesn't reliably display labels for controlled values. Category pickers use native `<select>` instead.
+- **`stopPropagation` on row actions:** When DataTable rows are clickable, the 3-dot dropdown menu click bubbles up and triggers navigation. Wrapping the dropdown in a `stopPropagation` div fixes this.
+- **POS intentionally diverges:** Larger inputs (`h-12 rounded-xl`), touch-first layout, no sidebar — a different context, not an inconsistency.
 
 ### Token system
 
