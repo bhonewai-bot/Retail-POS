@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { ProductForm } from '@/components/product-form';
-import { Skeleton } from '@/components/ui/skeleton';
+import { PageContainer } from '@/components/dashboard/page-container';
+import { PageHeader } from '@/components/dashboard/page-header';
+import { LoadingSpinner } from '@/components/dashboard/loading-spinner';
+import { EmptyState } from '@/components/dashboard/empty-state';
+import { Package } from 'lucide-react';
 
 interface Category {
   id: number;
@@ -67,38 +71,27 @@ export default function EditProductPage() {
   }, [router, productId]);
 
   if (loading) {
-    return (
-      <div className="space-y-6 max-w-3xl">
-        <div>
-          <Skeleton className="h-8 w-48 mb-2" />
-          <Skeleton className="h-4 w-72" />
-        </div>
-        <Skeleton className="h-64 w-full rounded-lg" />
-      </div>
-    );
+    return <LoadingSpinner className="min-h-[60vh]" />;
   }
 
   if (notFound) {
     return (
-      <div className="flex flex-col items-center justify-center py-24 text-center">
-        <p className="text-lg font-medium text-foreground">Product not found</p>
-        <p className="text-sm text-muted-foreground mt-1">
-          The product you&apos;re looking for doesn&apos;t exist.
-        </p>
-      </div>
+      <PageContainer>
+        <EmptyState
+          icon={Package}
+          title="Product not found"
+          description="The product you're looking for doesn't exist."
+        />
+      </PageContainer>
     );
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          Edit Product
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Update product information
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Edit Product"
+        description="Update product information"
+      />
       {initialData && (
         <ProductForm
           mode="edit"
@@ -107,6 +100,6 @@ export default function EditProductPage() {
           categories={categories}
         />
       )}
-    </div>
+    </PageContainer>
   );
 }

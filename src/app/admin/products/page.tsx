@@ -36,6 +36,8 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { toast } from 'sonner';
+import { PageContainer } from '@/components/dashboard/page-container';
+import { PageHeader } from '@/components/dashboard/page-header';
 import {
   Search,
   Plus,
@@ -296,35 +298,30 @@ export default function ProductsPage() {
   );
 
   return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-foreground">
-            Products
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Manage your product catalog
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => fetchProducts(pagination.page, pagination.pageSize)}
-          >
-            <RefreshCw className={cn("mr-2 h-3.5 w-3.5", loading && "animate-spin")} />
-            Refresh
-          </Button>
-          <Link href="/admin/products/new" className={buttonVariants({ size: 'sm' })}>
-            <Plus className="mr-1.5 h-3.5 w-3.5" />
-            Add Product
-          </Link>
-        </div>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="Products"
+        description="Manage your product catalog"
+        actions={
+          <>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => fetchProducts(pagination.page, pagination.pageSize)}
+            >
+              <RefreshCw className={cn("mr-2 h-3.5 w-3.5", loading && "animate-spin")} />
+              Refresh
+            </Button>
+            <Link href="/admin/products/new" className={buttonVariants({ size: 'sm' })}>
+              <Plus className="mr-1.5 h-3.5 w-3.5" />
+              Add Product
+            </Link>
+          </>
+        }
+      />
 
       {/* Toolbar */}
-      <div className="flex flex-col gap-3 rounded-xl border border-border/60 bg-card p-4 shadow-sm sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         {/* Search */}
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
@@ -425,6 +422,6 @@ export default function ProductsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </div>
+    </PageContainer>
   );
 }

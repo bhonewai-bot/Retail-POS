@@ -4,8 +4,9 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { ProductForm } from '@/components/product-form';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Loader2 } from 'lucide-react';
+import { PageContainer } from '@/components/dashboard/page-container';
+import { PageHeader } from '@/components/dashboard/page-header';
+import { LoadingSpinner } from '@/components/dashboard/loading-spinner';
 
 interface Category {
   id: number;
@@ -38,28 +39,16 @@ export default function NewProductPage() {
   }, [router]);
 
   if (loading) {
-    return (
-      <div className="space-y-6 max-w-3xl">
-        <div>
-          <Skeleton className="h-8 w-48 mb-2" />
-          <Skeleton className="h-4 w-72" />
-        </div>
-        <Skeleton className="h-64 w-full rounded-lg" />
-      </div>
-    );
+    return <LoadingSpinner className="min-h-[60vh]" />;
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold tracking-tight text-foreground">
-          New Product
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Add a new product to your catalog
-        </p>
-      </div>
+    <PageContainer>
+      <PageHeader
+        title="New Product"
+        description="Add a new product to your catalog"
+      />
       <ProductForm mode="create" categories={categories} />
-    </div>
+    </PageContainer>
   );
 }

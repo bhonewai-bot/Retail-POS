@@ -4,8 +4,8 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { authClient } from '@/lib/auth-client';
 import { AppShell } from '@/components/layout/app-shell';
+import { LoadingSpinner } from '@/components/dashboard/loading-spinner';
 import { managerNavItems } from '@/components/layout/nav-links';
-import { Loader2 } from 'lucide-react';
 
 interface SessionData {
   user: {
@@ -55,11 +55,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }
 
   if (loading) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <LoadingSpinner className="min-h-screen" />;
   }
 
   if (!session) return null;
