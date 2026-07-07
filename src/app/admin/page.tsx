@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authClient } from '@/lib/auth-client';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface SessionData {
@@ -92,9 +92,9 @@ export default function AdminPage() {
             <CardTitle>Quick Actions</CardTitle>
           </CardHeader>
           <CardContent>
-            <Button render={<Link href="/admin/products" />}>
+            <Link href="/admin/products" className={buttonVariants()}>
               Manage Products
-            </Button>
+            </Link>
           </CardContent>
         </Card>
 

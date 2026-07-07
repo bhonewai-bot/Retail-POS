@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -36,16 +36,11 @@ export default function Home() {
           </p>
         </div>
         <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <Button
-            render={
-              <a
-                href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                target="_blank"
-                rel="noopener noreferrer"
-              />
-            }
-            size="lg"
-            className="rounded-full md:w-[158px]"
+          <a
+            className={buttonVariants({ size: "lg", className: "rounded-full md:w-[158px]" })}
+            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <Image
               className="dark:invert"
@@ -55,21 +50,15 @@ export default function Home() {
               height={16}
             />
             Deploy Now
-          </Button>
-          <Button
-            render={
-              <a
-                href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-                target="_blank"
-                rel="noopener noreferrer"
-              />
-            }
-            variant="outline"
-            size="lg"
-            className="rounded-full md:w-[158px]"
+          </a>
+          <a
+            className={buttonVariants({ variant: "outline", size: "lg", className: "rounded-full md:w-[158px]" })}
+            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Documentation
-          </Button>
+          </a>
         </div>
       </main>
     </div>
