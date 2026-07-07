@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Authentication** - Users can log in with role-based access and persistent sessions (completed 2026-07-07)
 - [x] **Phase 2: Product Management** - Managers can create, edit, list, and search products (completed 2026-07-07)
-- [ ] **Phase 3: Inventory Tracking** - Managers can monitor stock levels and receive low-stock alerts
+- [x] **Phase 3: Inventory Tracking** - Managers can monitor stock levels and receive low-stock alerts (completed 2026-07-07)
 - [ ] **Phase 4: Inventory Adjustments** - Managers can adjust inventory quantities with history
 - [ ] **Phase 5: Checkout Flow** - Cashiers can build carts, calculate totals, and process transactions
 - [ ] **Phase 6: Atomic Transactions** - System handles concurrent inventory updates safely
@@ -81,16 +81,16 @@ Plans:
   1. System displays current stock quantity for each product
   2. Visual alerts appear when stock falls below threshold
 
-**Plans**: 2 plans
+**Plans**: 2/2 plans complete
 
 Plans:
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — Inventory API: /api/inventory endpoint with stock-level data, low-stock filter, and search
+- [x] 03-01-PLAN.md — Inventory API: /api/inventory endpoint with stock-level data, low-stock filter, and search
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 03-02-PLAN.md — Inventory admin UI: stock monitoring page with status badges, low-stock toggle, and search
+- [x] 03-02-PLAN.md — Inventory admin UI: stock monitoring page with status badges, low-stock toggle, and search
 
 ### Phase 4: Inventory Adjustments
 
@@ -192,7 +192,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Authentication | 5/5 | Complete    | 2026-07-07 |
 | 2. Product Management | 2/2 | Complete | 2026-07-07 |
-| 3. Inventory Tracking | 0/2 | Not started | - |
+| 3. Inventory Tracking | 2/2 | Complete   | 2026-07-07 |
 | 4. Inventory Adjustments | 0/TBD | Not started | - |
 | 5. Checkout Flow | 0/TBD | Not started | - |
 | 6. Atomic Transactions | 0/TBD | Not started | - |
