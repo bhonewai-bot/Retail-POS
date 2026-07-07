@@ -16,8 +16,8 @@ The database schema defines the core data models for the POS system:
 
 **Infrastructure:**
 - Prisma schema in [`prisma/schema.prisma`](../../prisma/schema.prisma)
-- Prisma singleton client in [`lib/prisma.ts`](../../lib/prisma.ts)
-- Generated Prisma client in [`app/generated/prisma/`](../../app/generated/prisma/)
+- Prisma singleton client in [`src/lib/prisma.ts`](../../src/lib/prisma.ts)
+- Generated Prisma client in [`src/generated/prisma/`](../../src/generated/prisma/)
 - PostgreSQL database connection via Prisma driver adapter
 
 ## Database schema
@@ -99,7 +99,7 @@ model User {
 
 ```ts
 // lib/prisma.ts
-import { PrismaClient } from "../app/generated/prisma/client";
+import { PrismaClient } from "../src/generated/prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 const adapter = new PrismaPg({
@@ -135,7 +135,7 @@ export default prisma;
 
 - [`prisma/schema.prisma`](../../prisma/schema.prisma) — Database schema
 - [`lib/prisma.ts`](../../lib/prisma.ts) — Prisma client singleton
-- [`app/generated/prisma/`](../../app/generated/prisma/) — Generated client types
+- [`src/generated/prisma/`](../../src/generated/prisma/) — Generated client types
 
 ---
 

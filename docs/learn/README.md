@@ -16,42 +16,40 @@ Code references like [`lib/prisma.ts`](../../lib/prisma.ts) are clickable.
 
 ## Project status
 
-**Currently implemented:**
-- ✅ Database schema and Prisma setup (Phase 1)
-
-**In progress:**
-- ⏳ Project planning (see `.planning/` for ROADMAP.md)
+**Completed:**
+- ✅ Foundation — Prisma schema, database client, data models
+- ✅ Authentication — Better Auth, login, role-based access, route protection
 
 **Not yet implemented:**
-- ❌ Authentication
-- ❌ Admin panel
-- ❌ POS interface
-- ❌ Checkout flow
-- ❌ Transaction history
-- ❌ Search
-- ❌ Receipts
+- ❌ Product management (CRUD, search)
+- ❌ Inventory tracking
+- ❌ Checkout flow (cart, transactions)
+- ❌ Transaction history & reporting
+- ❌ Receipt generation
 
 ## Phases
 
 | # | Chapter | Status | What it delivers |
 |---|---------|--------|------------------|
 | 1 | [Foundation](01-foundation.md) | ✅ Built | Prisma schema, database client, data models |
-| 2 | TBD | ⏳ Planned | Authentication (cashier vs manager) |
-| 3 | TBD | ⏳ Planned | Admin panel (product CRUD, inventory) |
-| 4 | TBD | ⏳ Planned | POS interface (checkout, cart, sales) |
-| 5 | TBD | ⏳ Planned | Transaction history & reporting |
-| 6 | TBD | ⏳ Planned | Search & receipts |
-| 7 | TBD | ⏳ Planned | Polish, security, refactoring |
+| 2 | [Authentication](02-authentication.md) | ✅ Built | Better Auth, login, role-based access, route protection |
+| 3 | Product Management | ⏳ Planned | Product CRUD, categories, search |
+| 4 | Inventory Tracking | ⏳ Planned | Stock levels, low-stock alerts |
+| 5 | Inventory Adjustments | ⏳ Planned | Manual adjustments with history |
+| 6 | Checkout Flow | ⏳ Planned | Cart, totals, simulated payment |
+| 7 | Atomic Transactions | ⏳ Planned | Race condition handling |
+| 8 | Transaction History | ⏳ Planned | View and filter records |
+| 9 | Receipt Generation | ⏳ Planned | Post-checkout receipts |
 
-*Learn files will be created after each phase is implemented.*
+*Learn files are created after each phase is implemented.*
 
 ## Tech stack at a glance
 
-- **Framework:** Next.js (App Router) + TypeScript
-- **Styling:** Tailwind CSS
-- **Database:** PostgreSQL + Prisma (driver adapter)
-- **Auth:** TBD (likely NextAuth/Auth.js)
-- **State:** Server Components + Server Actions
+- **Framework:** Next.js 16 (App Router) + TypeScript
+- **Styling:** Tailwind CSS 4
+- **Database:** PostgreSQL + Prisma 7 (driver adapter)
+- **Auth:** Better Auth (email/password, cookie sessions)
+- **State:** Server Components + Client Components
 - **Runtime:** Node.js
 
 ## Business context
@@ -79,4 +77,4 @@ This is a **demo project** for practicing full-stack development. It simulates a
 
 ---
 
-*Last updated: 2026-07-06 after foundation setup*
+*Last updated: 2026-07-07 after authentication phase*
