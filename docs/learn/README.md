@@ -22,9 +22,10 @@ Code references like [`lib/prisma.ts`](../../lib/prisma.ts) are clickable.
 - ✅ Product Management — CRUD API, admin UI, categories, search
 - ✅ Inventory Tracking — Stock levels, low-stock alerts
 - ✅ Inventory Adjustments — Manual adjustments with history
+- ✅ Checkout Flow — Cart, simulated payment, order creation, atomic stock decrement
 
 **Not yet implemented:**
-- ❌ Checkout flow (cart, transactions)
+- ❌ Atomic Transactions — Race condition handling
 - ❌ Transaction history & reporting
 - ❌ Receipt generation
 
@@ -37,7 +38,7 @@ Code references like [`lib/prisma.ts`](../../lib/prisma.ts) are clickable.
 | 3 | [Product Management](03-product-management.md) | ✅ Built | Product CRUD API, admin UI, categories, search |
 | 4 | [Inventory Tracking](04-inventory-tracking.md) | ✅ Built | Stock levels, low-stock alerts |
 | 5 | [Inventory Adjustments](05-inventory-adjustments.md) | ✅ Built | Manual adjustments with history |
-| 6 | Checkout Flow | ⏳ Planned | Cart, totals, simulated payment |
+| 6 | [Checkout Flow](06-checkout-flow.md) | ✅ Built | Cart, simulated payment, order creation, atomic stock decrement |
 | 7 | Atomic Transactions | ⏳ Planned | Race condition handling |
 | 8 | Transaction History | ⏳ Planned | View and filter records |
 | 9 | Receipt Generation | ⏳ Planned | Post-checkout receipts |
@@ -81,4 +82,4 @@ This is a **demo project** for practicing full-stack development. It simulates a
 
 ---
 
-*Last updated: 2026-07-07 after UI design system and POS terminal*
+*Last updated: 2026-07-07 after checkout flow implementation*

@@ -410,9 +410,21 @@ function PaymentDialog({
   onOpenChange: (open: boolean) => void;
   onComplete: () => void;
 }) {
-  const { total, dispatch } = useCart();
+  const { state, subtotal, tax, total, dispatch } = useCart();
   const [processing, setProcessing] = useState(false);
   const [method, setMethod] = useState<string | null>(null);
+  const [success, setSuccess] = useState<{ orderNumber: string; total: number; paymentMethod: string } | null>(null);
+
+  // Auto-dismiss success modal after 3 seconds
+  useEffect(() => {
+    if (success) {
+      const timer = setTimeout(() => {
+        setSuccess(null);
+        onComplete();
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [success, onComplete]);
 
   async function handlePay(paymentMethod: string) {
     setMethod(paymentMethod);
@@ -421,80 +433,150 @@ function PaymentDialog({
     // Simulate payment processing
     await new Promise((resolve) => setTimeout(resolve, 1500));
 
-    setProcessing(false);
-    dispatch({ type: 'CLEAR' });
-    onOpenChange(false);
-    setMethod(null);
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          items: state.items.map((item) => ({
+            productId: item.id,
+            quantity: item.quantity,
+            price: item.price,
+          })),
+          subtotal,
+          tax,
+          total,
+          paymentMethod,
+        }),
+      });
 
-    toast.success('Payment successful', {
-      description: `$${total.toFixed(2)} paid via ${paymentMethod}`,
-      icon: <CheckCircle2 className="h-5 w-5 text-emerald-500" />,
-    });
+      if (!response.ok) {
+        const errorData = await response.json();
+        toast.error('Payment failed', {
+          description: errorData.error || 'Failed to create order',
+        });
+        setProcessing(false);
+        setMethod(null);
+        return;
+      }
 
-    onComplete();
+      const order = await response.json();
+
+      setProcessing(false);
+      dispatch({ type: 'CLEAR' });
+      onOpenChange(false);
+      setMethod(null);
+
+      // Show success modal instead of toast
+      setSuccess({
+        orderNumber: order.orderNumber,
+        total: total,
+        paymentMethod: paymentMethod,
+      });
+    } catch {
+      toast.error('Payment failed', {
+        description: 'Network error — please try again',
+      });
+      setProcessing(false);
+      setMethod(null);
+    }
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="text-xl">Select Payment Method</DialogTitle>
-        </DialogHeader>
+    <>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl">Select Payment Method</DialogTitle>
+          </DialogHeader>
 
-        <div className="py-4">
-          <p className="text-3xl font-bold text-center mb-6">
-            ${total.toFixed(2)}
-          </p>
+          <div className="py-4">
+            <p className="text-3xl font-bold text-center mb-6">
+              ${total.toFixed(2)}
+            </p>
 
-          <div className="grid grid-cols-3 gap-3">
-            <button
-              onClick={() => handlePay('Cash')}
-              disabled={processing}
-              className="flex flex-col items-center gap-2 p-6 rounded-xl border-2 transition-all hover:border-primary hover:bg-primary/5 active:scale-95 disabled:opacity-50"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
-                {processing && method === 'Cash' ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                ) : (
-                  <Banknote className="h-6 w-6" />
-                )}
-              </div>
-              <span className="text-sm font-medium">Cash</span>
-            </button>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                onClick={() => handlePay('Cash')}
+                disabled={processing}
+                className="flex flex-col items-center gap-2 p-6 rounded-xl border-2 transition-all hover:border-primary hover:bg-primary/5 active:scale-95 disabled:opacity-50"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                  {processing && method === 'Cash' ? (
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  ) : (
+                    <Banknote className="h-6 w-6" />
+                  )}
+                </div>
+                <span className="text-sm font-medium">Cash</span>
+              </button>
 
-            <button
-              onClick={() => handlePay('Card')}
-              disabled={processing}
-              className="flex flex-col items-center gap-2 p-6 rounded-xl border-2 transition-all hover:border-primary hover:bg-primary/5 active:scale-95 disabled:opacity-50"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600">
-                {processing && method === 'Card' ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                ) : (
-                  <CreditCard className="h-6 w-6" />
-                )}
-              </div>
-              <span className="text-sm font-medium">Card</span>
-            </button>
+              <button
+                onClick={() => handlePay('Card')}
+                disabled={processing}
+                className="flex flex-col items-center gap-2 p-6 rounded-xl border-2 transition-all hover:border-primary hover:bg-primary/5 active:scale-95 disabled:opacity-50"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                  {processing && method === 'Card' ? (
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  ) : (
+                    <CreditCard className="h-6 w-6" />
+                  )}
+                </div>
+                <span className="text-sm font-medium">Card</span>
+              </button>
 
-            <button
-              onClick={() => handlePay('QR')}
-              disabled={processing}
-              className="flex flex-col items-center gap-2 p-6 rounded-xl border-2 transition-all hover:border-primary hover:bg-primary/5 active:scale-95 disabled:opacity-50"
-            >
-              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 text-violet-600">
-                {processing && method === 'QR' ? (
-                  <Loader2 className="h-6 w-6 animate-spin" />
-                ) : (
-                  <QrCode className="h-6 w-6" />
-                )}
-              </div>
-              <span className="text-sm font-medium">QR Pay</span>
-            </button>
+              <button
+                onClick={() => handlePay('QR')}
+                disabled={processing}
+                className="flex flex-col items-center gap-2 p-6 rounded-xl border-2 transition-all hover:border-primary hover:bg-primary/5 active:scale-95 disabled:opacity-50"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 text-violet-600">
+                  {processing && method === 'QR' ? (
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  ) : (
+                    <QrCode className="h-6 w-6" />
+                  )}
+                </div>
+                <span className="text-sm font-medium">QR Pay</span>
+              </button>
+            </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </DialogContent>
+      </Dialog>
+
+      {/* Success Modal - Auto-dismiss after 3 seconds */}
+      <Dialog open={!!success} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-xl flex items-center gap-2">
+              <CheckCircle2 className="h-6 w-6 text-emerald-500" />
+              Payment Successful
+            </DialogTitle>
+          </DialogHeader>
+
+          <div className="py-6 text-center">
+            <p className="text-4xl font-bold text-emerald-600 mb-4">
+              ${success?.total.toFixed(2)}
+            </p>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p>
+                <span className="font-medium text-foreground">Order:</span>{' '}
+                {success?.orderNumber}
+              </p>
+              <p>
+                <span className="font-medium text-foreground">Payment:</span>{' '}
+                {success?.paymentMethod}
+              </p>
+            </div>
+          </div>
+
+          <div className="text-center text-xs text-muted-foreground">
+            Closing automatically...
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
 
