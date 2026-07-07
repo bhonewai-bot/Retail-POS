@@ -83,11 +83,12 @@ Plans:
   3. Manager can manually adjust inventory quantities (receive stock, mark damage, etc.)
   4. Inventory changes are logged with timestamps and reasons
 
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
 
-- [ ] 03-01: TBD
+- [ ] 03-01-PLAN.md — Inventory API: /api/inventory endpoint with stock-level data, low-stock filter, and search
+- [ ] 03-02-PLAN.md — Inventory admin UI: stock monitoring page with status badges, low-stock toggle, and search
 
 ### Phase 4: Inventory Adjustments
 
@@ -189,7 +190,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 |-------|----------------|--------|-----------|
 | 1. Authentication | 5/5 | Complete    | 2026-07-07 |
 | 2. Product Management | 2/2 | Complete | 2026-07-07 |
-| 3. Inventory Tracking | 0/TBD | Not started | - |
+| 3. Inventory Tracking | 0/2 | Not started | - |
 | 4. Inventory Adjustments | 0/TBD | Not started | - |
 | 5. Checkout Flow | 0/TBD | Not started | - |
 | 6. Atomic Transactions | 0/TBD | Not started | - |
