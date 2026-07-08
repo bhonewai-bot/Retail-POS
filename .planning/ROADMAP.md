@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 3: Inventory Tracking** - Managers can monitor stock levels and receive low-stock alerts (completed 2026-07-07)
 - [x] **Phase 4: Inventory Adjustments** - Managers can adjust inventory quantities with history (completed 2026-07-07)
 - [ ] **Phase 5: Checkout Flow** - Cashiers can build carts, calculate totals, and process transactions
-- [ ] **Phase 6: Atomic Transactions** - System handles concurrent inventory updates safely
+- [x] **Phase 6: Atomic Transactions** - System handles concurrent inventory updates safely (completed 2026-07-08)
 - [ ] **Phase 7: Transaction History** - Managers can view and filter transaction records
 - [ ] **Phase 8: Receipt Generation** - System generates receipts after successful checkout
 
@@ -146,11 +146,11 @@ Plans:
   3. No overselling occurs under concurrent checkout scenarios
   4. Failed transactions due to stock unavailability display clear error message
 
-**Plans**: 1 plan
+**Plans**: 1/1 plans complete
 
 Plans:
 
-- [ ] 06-01-PLAN.md — Fix race conditions in orders and inventory APIs with pessimistic row locking
+- [x] 06-01-PLAN.md — Fix race conditions in orders and inventory APIs with pessimistic row locking
 
 ### Phase 7: Transaction History
 
@@ -200,6 +200,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 3. Inventory Tracking | 2/2 | Complete    | 2026-07-07 |
 | 4. Inventory Adjustments | 2/2 | Complete    | 2026-07-07 |
 | 5. Checkout Flow | 1/1 | Ready | - |
-| 6. Atomic Transactions | 0/TBD | Not started | - |
+| 6. Atomic Transactions | 1/1 | Complete   | 2026-07-08 |
 | 7. Transaction History | 0/TBD | Not started | - |
 | 8. Receipt Generation | 0/TBD | Not started | - |
