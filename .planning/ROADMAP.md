@@ -182,11 +182,11 @@ Plans:
   3. Receipt includes payment method and transaction timestamp
   4. Receipt can be printed or saved (simulated)
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
 
-- [ ] 08-01: TBD
+- [ ] 08-01-PLAN.md — Receipt component, enhanced order API, and PaymentDialog integration
 
 ## Progress
 
