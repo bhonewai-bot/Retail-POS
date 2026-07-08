@@ -177,9 +177,11 @@ export default function TransactionsPage() {
       {
         accessorKey: 'paymentMethod',
         header: 'Payment',
-        cell: ({ getValue }) => (
-          <span className="text-sm capitalize">{getValue() as string}</span>
-        ),
+        cell: ({ getValue }) => {
+          const method = getValue() as string;
+          const label = method === 'QR' ? 'QR Pay' : method;
+          return <span className="text-sm">{label}</span>;
+        },
       },
       {
         accessorKey: 'status',
@@ -231,9 +233,9 @@ export default function TransactionsPage() {
               <SelectValue placeholder="All" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="cash">Cash</SelectItem>
-              <SelectItem value="card">Card</SelectItem>
-              <SelectItem value="mobile">Mobile</SelectItem>
+              <SelectItem value="Cash">Cash</SelectItem>
+              <SelectItem value="Card">Card</SelectItem>
+              <SelectItem value="QR">QR Pay</SelectItem>
             </SelectContent>
           </Select>
         </div>
