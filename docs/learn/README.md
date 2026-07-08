@@ -25,7 +25,6 @@ Code references like [`lib/prisma.ts`](../../lib/prisma.ts) are clickable.
 - ✅ Checkout Flow — Cart, simulated payment, order creation, atomic stock decrement
 
 **Not yet implemented:**
-- ❌ Atomic Transactions — Race condition handling
 - ❌ Transaction history & reporting
 - ❌ Receipt generation
 
@@ -39,7 +38,7 @@ Code references like [`lib/prisma.ts`](../../lib/prisma.ts) are clickable.
 | 4 | [Inventory Tracking](04-inventory-tracking.md) | ✅ Built | Stock levels, low-stock alerts |
 | 5 | [Inventory Adjustments](05-inventory-adjustments.md) | ✅ Built | Manual adjustments with history |
 | 6 | [Checkout Flow](06-checkout-flow.md) | ✅ Built | Cart, simulated payment, order creation, atomic stock decrement |
-| 7 | Atomic Transactions | ⏳ Planned | Race condition handling |
+| 7 | [Atomic Transactions](07-atomic-transactions.md) | ✅ Built | Pessimistic locking for race condition handling |
 | 8 | Transaction History | ⏳ Planned | View and filter records |
 | 9 | Receipt Generation | ⏳ Planned | Post-checkout receipts |
 
@@ -82,4 +81,4 @@ This is a **demo project** for practicing full-stack development. It simulates a
 
 ---
 
-*Last updated: 2026-07-07 after checkout flow implementation*
+*Last updated: 2026-07-08 after atomic transactions implementation*
