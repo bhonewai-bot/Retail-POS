@@ -47,3 +47,13 @@ Updated `PaymentDialog` in `src/app/pos/page.tsx`:
 |------|--------|
 | `src/app/api/orders/route.ts` | New file — Orders API endpoint |
 | `src/app/pos/page.tsx` | Updated PaymentDialog to call orders API |
+
+## Post-Completion Fix (2026-07-08)
+
+**Bug:** Stock badges on product grid did not update after a successful checkout.
+
+**Root cause:** `onComplete` callback passed to `PaymentDialog` was `() => {}` — products were fetched once on mount and never refreshed.
+
+**Fix:** Extracted product fetching into `fetchProducts` callback, wired it to `PaymentDialog.onComplete` so products (and their stock values) re-fetch after each successful sale.
+
+**Commit:** `015fd55` — `fix(pos): refresh product stock badges after checkout completion`
