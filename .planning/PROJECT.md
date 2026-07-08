@@ -22,6 +22,7 @@ Build a working POS system that demonstrates full-stack development patterns —
 - ✓ Database schema with Product, Category, Order, OrderItem, Customer, User models — existing
 - ✓ Prisma client setup with PostgreSQL adapter — existing
 - ✓ Inventory atomicity with pessimistic row locking (INV-04) — Phase 6: SELECT ... FOR UPDATE prevents overselling under concurrent checkout
+- ✓ Transaction history viewing and filtering (TRANS-01, TRANS-02, TRANS-03) — Phase 7: Manager can view transaction list, filter by date range, and inspect order details
 
 ### Active
 
@@ -29,7 +30,6 @@ Build a working POS system that demonstrates full-stack development patterns —
 - [ ] Product management interface (CRUD with categories)
 - [ ] Inventory tracking with stock levels and low-stock alerts
 - [ ] POS checkout interface (cart, totals calculation)
-- [ ] Transaction history and basic reporting
 - [ ] Search functionality for products (~200 items)
 - [ ] Receipt generation after checkout
 
