@@ -37,13 +37,15 @@ function formatReceiptDate(dateStr: string): string {
 interface ReceiptProps {
   open: boolean
   onOpenChange: (open: boolean) => void
-  orderData: ReceiptOrderData
+  orderData: ReceiptOrderData | null
 }
 
 function Receipt({ open, onOpenChange, orderData }: ReceiptProps) {
   const handlePrint = () => {
     window.print()
   }
+
+  if (!orderData) return null
 
   return (
     <>

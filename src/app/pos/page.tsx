@@ -553,7 +553,7 @@ function PaymentDialog({
             onComplete();
           }
         }}
-        orderData={success!}
+        orderData={success}
       />
     </>
   );
