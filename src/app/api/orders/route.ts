@@ -104,11 +104,15 @@ export async function POST(request: NextRequest) {
         });
       }
 
-      // Return order with items
+      // Return order with items and product details
       return tx.order.findUnique({
         where: { id: newOrder.id },
         include: {
-          items: true,
+          items: {
+            include: {
+              product: { select: { id: true, name: true, sku: true } },
+            },
+          },
         },
       });
     });
