@@ -1,4 +1,5 @@
 import { type NextRequest } from 'next/server';
+import { Prisma } from '../../../generated/prisma/client';
 import prisma from '@/lib/prisma';
 
 // ─── POST /api/orders — create an order ──────────────────────
@@ -44,31 +45,34 @@ export async function POST(request: NextRequest) {
     // Get unique product IDs
     const productIds = [...new Set(items.map((item: { productId: number }) => item.productId))];
 
-    // Verify all products exist and have sufficient stock
-    const products = await prisma.product.findMany({
-      where: { id: { in: productIds } },
-    });
-
-    const productMap = new Map(products.map((p) => [p.id, p]));
-
-    for (const item of items) {
-      const product = productMap.get(item.productId);
-      if (!product) {
-        return Response.json({ error: 'Product not found' }, { status: 404 });
-      }
-      if (product.stock < item.quantity) {
-        return Response.json({ error: `Insufficient stock for ${product.name}` }, { status: 400 });
-      }
-    }
-
     // Generate order number: ORD-YYYYMMDD-XXXX
     const now = new Date();
     const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
     const randomNum = Math.floor(1000 + Math.random() * 9000);
     const orderNumber = `ORD-${dateStr}-${randomNum}`;
 
-    // Atomic: create order + order items + decrement stock
+    // Atomic: lock rows, validate stock, create order + items + decrement stock
     const order = await prisma.$transaction(async (tx) => {
+      // Lock product rows with SELECT ... FOR UPDATE to prevent concurrent overselling
+      const lockedProducts = await tx.$queryRaw<{ id: number; stock: number; name: string }[]>`
+        SELECT id, stock, name FROM "Product"
+        WHERE id IN (${Prisma.join(productIds)})
+        FOR UPDATE
+      `;
+
+      const lockedMap = new Map(lockedProducts.map((p) => [p.id, p]));
+
+      // Check stock from locked data (inside transaction)
+      for (const item of items) {
+        const product = lockedMap.get(item.productId);
+        if (!product) {
+          throw new Error(`Product not found (ID: ${item.productId})`);
+        }
+        if (product.stock < item.quantity) {
+          throw new Error(`Insufficient stock for ${product.name}`);
+        }
+      }
+
       // Create the order
       const newOrder = await tx.order.create({
         data: {
@@ -112,6 +116,10 @@ export async function POST(request: NextRequest) {
     return Response.json(order, { status: 201 });
   } catch (error) {
     console.error('❌ POST /api/orders error:', error);
+    const message = error instanceof Error ? error.message : 'Failed to create order';
+    if (message.includes('Insufficient stock') || message.includes('Product not found')) {
+      return Response.json({ error: message }, { status: 400 });
+    }
     return Response.json({ error: 'Failed to create order' }, { status: 500 });
   }
 }
