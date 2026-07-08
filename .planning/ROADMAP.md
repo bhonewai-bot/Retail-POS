@@ -19,7 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: Inventory Adjustments** - Managers can adjust inventory quantities with history (completed 2026-07-07)
 - [ ] **Phase 5: Checkout Flow** - Cashiers can build carts, calculate totals, and process transactions
 - [x] **Phase 6: Atomic Transactions** - System handles concurrent inventory updates safely (completed 2026-07-08)
-- [ ] **Phase 7: Transaction History** - Managers can view and filter transaction records
+- [x] **Phase 7: Transaction History** - Managers can view and filter transaction records (completed 2026-07-08)
 - [ ] **Phase 8: Receipt Generation** - System generates receipts after successful checkout
 
 ## Phase Details
@@ -164,11 +164,11 @@ Plans:
   3. Transactions can be filtered by date range
   4. Transaction details include products, quantities, prices, and payment method
 
-**Plans**: TBD
+**Plans**: 1/1 plans complete
 
 Plans:
 
-- [ ] 07-01: TBD
+- [x] 07-01-PLAN.md — Transaction list page with filters, detail page, and orders/[id] API endpoint
 
 ### Phase 8: Receipt Generation
 
@@ -201,5 +201,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Inventory Adjustments | 2/2 | Complete    | 2026-07-07 |
 | 5. Checkout Flow | 1/1 | Ready | - |
 | 6. Atomic Transactions | 1/1 | Complete    | 2026-07-08 |
-| 7. Transaction History | 0/TBD | Not started | - |
+| 7. Transaction History | 1/1 | Complete   | 2026-07-08 |
 | 8. Receipt Generation | 0/TBD | Not started | - |
