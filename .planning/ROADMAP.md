@@ -20,7 +20,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 5: Checkout Flow** - Cashiers can build carts, calculate totals, and process transactions
 - [x] **Phase 6: Atomic Transactions** - System handles concurrent inventory updates safely (completed 2026-07-08)
 - [x] **Phase 7: Transaction History** - Managers can view and filter transaction records (completed 2026-07-08)
-- [ ] **Phase 8: Receipt Generation** - System generates receipts after successful checkout
+- [x] **Phase 8: Receipt Generation** - System generates receipts after successful checkout (completed 2026-07-08)
 
 ## Phase Details
 
@@ -182,11 +182,11 @@ Plans:
   3. Receipt includes payment method and transaction timestamp
   4. Receipt can be printed or saved (simulated)
 
-**Plans**: 1 plan
+**Plans**: 1/1 plans complete
 
 Plans:
 
-- [ ] 08-01-PLAN.md — Receipt component, enhanced order API, and PaymentDialog integration
+- [x] 08-01-PLAN.md — Receipt component, enhanced order API, and PaymentDialog integration
 
 ## Progress
 
@@ -202,4 +202,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 5. Checkout Flow | 1/1 | Ready | - |
 | 6. Atomic Transactions | 1/1 | Complete    | 2026-07-08 |
 | 7. Transaction History | 1/1 | Complete    | 2026-07-08 |
-| 8. Receipt Generation | 0/TBD | Not started | - |
+| 8. Receipt Generation | 1/1 | Complete    | 2026-07-08 |
