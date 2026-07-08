@@ -38,9 +38,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Transaction History
 
-- [ ] **TRANS-01**: Manager can view list of all transactions
-- [ ] **TRANS-02**: Manager can view transaction details (line items)
-- [ ] **TRANS-03**: Filter transactions by date range
+- [x] **TRANS-01**: Manager can view list of all transactions
+- [x] **TRANS-02**: Manager can view transaction details (line items)
+- [x] **TRANS-03**: Filter transactions by date range
 
 ### Search
 
@@ -104,9 +104,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 | CHECK-04 | Phase 5 | Ready |
 | CHECK-05 | Phase 5 | Ready |
 | INV-04 | Phase 6 | Complete |
-| TRANS-01 | Phase 7 | Pending |
-| TRANS-02 | Phase 7 | Pending |
-| TRANS-03 | Phase 7 | Pending |
+| TRANS-01 | Phase 7 | Complete |
+| TRANS-02 | Phase 7 | Complete |
+| TRANS-03 | Phase 7 | Complete |
 | SEARCH-02 | Phase 2 | Pending |
 | RECEIPT-01 | Phase 8 | Pending |
 | RECEIPT-02 | Phase 8 | Pending |

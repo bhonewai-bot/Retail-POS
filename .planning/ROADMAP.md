@@ -201,5 +201,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. Inventory Adjustments | 2/2 | Complete    | 2026-07-07 |
 | 5. Checkout Flow | 1/1 | Ready | - |
 | 6. Atomic Transactions | 1/1 | Complete    | 2026-07-08 |
-| 7. Transaction History | 1/1 | Complete   | 2026-07-08 |
+| 7. Transaction History | 1/1 | Complete    | 2026-07-08 |
 | 8. Receipt Generation | 0/TBD | Not started | - |
