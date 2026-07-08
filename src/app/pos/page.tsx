@@ -591,29 +591,31 @@ function POSPageContent() {
   const [paymentOpen, setPaymentOpen] = useState(false);
   const { dispatch } = useCart();
 
+  const fetchProducts = useCallback(async () => {
+    try {
+      const [prodRes, catRes] = await Promise.all([
+        fetch('/api/products?pageSize=200'),
+        fetch('/api/categories'),
+      ]);
+      const prodData = await prodRes.json();
+      const catData = await catRes.json();
+      setProducts(prodData.products || []);
+      setCategories(catData.categories || []);
+    } catch (err) {
+      console.error('Failed to load products:', err);
+    }
+  }, []);
+
   useEffect(() => {
     async function init() {
       const { data } = await authClient.getSession();
       if (!data) { router.push('/login'); return; }
       setSession(data as unknown as { user: { name: string; role: string } });
-
-      try {
-        const [prodRes, catRes] = await Promise.all([
-          fetch('/api/products?pageSize=200'),
-          fetch('/api/categories'),
-        ]);
-        const prodData = await prodRes.json();
-        const catData = await catRes.json();
-        setProducts(prodData.products || []);
-        setCategories(catData.categories || []);
-      } catch (err) {
-        console.error('Failed to load products:', err);
-      } finally {
-        setLoading(false);
-      }
+      await fetchProducts();
+      setLoading(false);
     }
     init();
-  }, [router]);
+  }, [router, fetchProducts]);
 
   const handleAddToCart = useCallback(
     (product: Product) => {
@@ -682,7 +684,7 @@ function POSPageContent() {
       <PaymentDialog
         open={paymentOpen}
         onOpenChange={setPaymentOpen}
-        onComplete={() => {}}
+        onComplete={fetchProducts}
       />
     </div>
   );
