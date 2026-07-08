@@ -146,11 +146,11 @@ Plans:
   3. No overselling occurs under concurrent checkout scenarios
   4. Failed transactions due to stock unavailability display clear error message
 
-**Plans**: TBD
+**Plans**: 1 plan
 
 Plans:
 
-- [ ] 06-01: TBD
+- [ ] 06-01-PLAN.md — Fix race conditions in orders and inventory APIs with pessimistic row locking
 
 ### Phase 7: Transaction History
 
