@@ -21,6 +21,7 @@ Build a working POS system that demonstrates full-stack development patterns —
 
 - ✓ Database schema with Product, Category, Order, OrderItem, Customer, User models — existing
 - ✓ Prisma client setup with PostgreSQL adapter — existing
+- ✓ Inventory atomicity with pessimistic row locking (INV-04) — Phase 6: SELECT ... FOR UPDATE prevents overselling under concurrent checkout
 
 ### Active
 
