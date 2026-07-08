@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Receipt, type ReceiptOrderData } from '@/components/pos/receipt';
 import {
   Dialog,
   DialogContent,
@@ -413,18 +414,7 @@ function PaymentDialog({
   const { state, subtotal, tax, total, dispatch } = useCart();
   const [processing, setProcessing] = useState(false);
   const [method, setMethod] = useState<string | null>(null);
-  const [success, setSuccess] = useState<{ orderNumber: string; total: number; paymentMethod: string } | null>(null);
-
-  // Auto-dismiss success modal after 3 seconds
-  useEffect(() => {
-    if (success) {
-      const timer = setTimeout(() => {
-        setSuccess(null);
-        onComplete();
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [success, onComplete]);
+  const [success, setSuccess] = useState<ReceiptOrderData | null>(null);
 
   async function handlePay(paymentMethod: string) {
     setMethod(paymentMethod);
@@ -467,11 +457,20 @@ function PaymentDialog({
       onOpenChange(false);
       setMethod(null);
 
-      // Show success modal instead of toast
+      // Show receipt dialog
       setSuccess({
         orderNumber: order.orderNumber,
-        total: total,
-        paymentMethod: paymentMethod,
+        subtotal: Number(order.subtotal),
+        tax: Number(order.tax),
+        total: Number(order.total),
+        paymentMethod: order.paymentMethod,
+        createdAt: order.createdAt,
+        items: order.items.map((item: { quantity: number; price: number; total: number; product: { name: string; sku: string } }) => ({
+          quantity: item.quantity,
+          price: Number(item.price),
+          total: Number(item.total),
+          product: item.product,
+        })),
       });
     } catch {
       toast.error('Payment failed', {
@@ -545,37 +544,17 @@ function PaymentDialog({
         </DialogContent>
       </Dialog>
 
-      {/* Success Modal - Auto-dismiss after 3 seconds */}
-      <Dialog open={!!success} onOpenChange={() => {}}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="text-xl flex items-center gap-2">
-              <CheckCircle2 className="h-6 w-6 text-emerald-500" />
-              Payment Successful
-            </DialogTitle>
-          </DialogHeader>
-
-          <div className="py-6 text-center">
-            <p className="text-4xl font-bold text-emerald-600 mb-4">
-              ${success?.total.toFixed(2)}
-            </p>
-            <div className="space-y-2 text-sm text-muted-foreground">
-              <p>
-                <span className="font-medium text-foreground">Order:</span>{' '}
-                {success?.orderNumber}
-              </p>
-              <p>
-                <span className="font-medium text-foreground">Payment:</span>{' '}
-                {success?.paymentMethod}
-              </p>
-            </div>
-          </div>
-
-          <div className="text-center text-xs text-muted-foreground">
-            Closing automatically...
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Receipt Dialog */}
+      <Receipt
+        open={!!success}
+        onOpenChange={(open) => {
+          if (!open) {
+            setSuccess(null);
+            onComplete();
+          }
+        }}
+        orderData={success!}
+      />
     </>
   );
 }
