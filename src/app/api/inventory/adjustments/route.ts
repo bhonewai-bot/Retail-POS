@@ -1,4 +1,5 @@
 import { type NextRequest } from 'next/server';
+import { Prisma } from '../../../../generated/prisma/client';
 import prisma from '@/lib/prisma';
 
 const VALID_TYPES = ['stock-receipt', 'damage', 'count-adjustment', 'return', 'other'] as const;
@@ -24,44 +25,59 @@ export async function POST(request: NextRequest) {
       return Response.json({ error: 'Quantity must be a non-zero integer' }, { status: 400 });
     }
 
-    // Verify product exists
-    const product = await prisma.product.findUnique({ where: { id: productId } });
-    if (!product) {
-      return Response.json({ error: 'Product not found' }, { status: 404 });
-    }
-
-    // Check stock won't go negative
-    const newStock = product.stock + quantity;
-    if (newStock < 0) {
-      return Response.json({ error: 'Insufficient stock' }, { status: 400 });
-    }
-
     // Get the first manager user as the adjustment author
     const managerUser = await prisma.user.findFirst({ where: { role: 'manager' } });
     if (!managerUser) {
       return Response.json({ error: 'No manager user found' }, { status: 500 });
     }
 
-    // Atomic: create adjustment + update stock
-    const [adjustment] = await prisma.$transaction([
-      prisma.inventoryAdjustment.create({
-        data: {
-          type,
-          quantity,
-          reason: reason ? String(reason).trim() : null,
-          productId,
-          userId: managerUser.id,
-        },
-      }),
-      prisma.product.update({
-        where: { id: productId },
-        data: { stock: newStock },
-      }),
-    ]);
+    // Atomic: lock product row, validate stock, create adjustment + update stock
+    const adjustment = await prisma.$transaction(async (tx) => {
+      // Lock the product row with SELECT ... FOR UPDATE to prevent concurrent adjustments
+      const [lockedProduct] = await tx.$queryRaw<{ id: number; stock: number }[]>`
+        SELECT id, stock FROM "Product"
+        WHERE id = ${productId}
+        FOR UPDATE
+      `;
+
+      if (!lockedProduct) {
+        throw new Error('Product not found');
+      }
+
+      // Check stock from locked data (inside transaction)
+      if (lockedProduct.stock + quantity < 0) {
+        throw new Error('Insufficient stock');
+      }
+
+      const newStock = lockedProduct.stock + quantity;
+
+      // Create adjustment and update stock atomically
+      const [adjustmentRecord] = await Promise.all([
+        tx.inventoryAdjustment.create({
+          data: {
+            type,
+            quantity,
+            reason: reason ? String(reason).trim() : null,
+            productId,
+            userId: managerUser.id,
+          },
+        }),
+        tx.product.update({
+          where: { id: productId },
+          data: { stock: newStock },
+        }),
+      ]);
+
+      return adjustmentRecord;
+    });
 
     return Response.json(adjustment, { status: 201 });
   } catch (error) {
     console.error('❌ POST /api/inventory/adjustments error:', error);
+    const message = error instanceof Error ? error.message : 'Failed to create adjustment';
+    if (message.includes('Insufficient stock') || message.includes('Product not found')) {
+      return Response.json({ error: message }, { status: 400 });
+    }
     return Response.json({ error: 'Failed to create adjustment' }, { status: 500 });
   }
 }
