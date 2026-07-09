@@ -6,7 +6,6 @@ import {
   LayoutDashboard,
   Package,
   ShoppingCart,
-  Settings,
   BarChart3,
   Receipt,
   type LucideIcon,

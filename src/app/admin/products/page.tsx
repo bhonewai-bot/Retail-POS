@@ -39,8 +39,6 @@ import {
   Trash2,
   RefreshCw,
   Download,
-  Filter,
-  Package,
 } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────────────

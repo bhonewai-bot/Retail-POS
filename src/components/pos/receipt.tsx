@@ -3,7 +3,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { Printer, X } from "lucide-react"
+import { Printer } from "lucide-react"
 
 export interface ReceiptOrderData {
   orderNumber: string

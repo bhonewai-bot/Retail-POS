@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import {
   PanelLeftClose,
@@ -18,10 +18,9 @@ interface AppSidebarProps {
   navItems: NavItem[];
   user: { name: string; email: string; role: string };
   onLogout: () => void;
-  headerSlot?: ReactNode;
 }
 
-export function AppSidebar({ navItems, user, onLogout, headerSlot }: AppSidebarProps) {
+export function AppSidebar({ navItems, user, onLogout }: AppSidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
   const initials = user.name
     .split(" ")

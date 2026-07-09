@@ -14,7 +14,7 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
   ]),
   {
-    files: ["src/components/ui/data-table.tsx"],
+    files: ["src/components/ui/data-table.tsx", "src/components/product-form.tsx"],
     rules: {
       "react-hooks/incompatible-library": "off",
     },

@@ -45,6 +45,7 @@ function Button({
   variant = "default",
   size = "default",
   render,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   asChild: _asChild,
   ...props
 }: ButtonPrimitive.Props & VariantProps<typeof buttonVariants> & { asChild?: boolean }) {
