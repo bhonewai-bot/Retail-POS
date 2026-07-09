@@ -96,7 +96,7 @@ describe('POST /api/orders', () => {
   });
 
   it('should use FOR UPDATE locking (pessimistic concurrency control)', () => {
-    const queryPattern = /SELECT.*FOR UPDATE/s;
+    const queryPattern = /SELECT[\s\S]*FOR UPDATE/;
     const expectedQuery = `
       SELECT id, stock, name FROM "Product"
       WHERE id IN ($1)
@@ -106,7 +106,7 @@ describe('POST /api/orders', () => {
   });
 
   it('should perform stock check inside transaction (not outside)', () => {
-    const transactionPattern = /\$transaction.*async.*\$queryRaw.*FOR UPDATE/s;
+    const transactionPattern = /\$transaction[\s\S]*async[\s\S]*\$queryRaw[\s\S]*FOR UPDATE/;
     const implementationPattern = `prisma.$transaction(async (tx) => {
       const lockedProducts = await tx.$queryRaw
       SELECT id, stock, name FROM "Product" WHERE id IN (...) FOR UPDATE

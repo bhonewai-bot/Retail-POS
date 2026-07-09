@@ -82,7 +82,7 @@ describe('POST /api/inventory/adjustments', () => {
   });
 
   it('should use FOR UPDATE locking (pessimistic concurrency control)', () => {
-    const queryPattern = /SELECT.*FOR UPDATE/s;
+    const queryPattern = /SELECT[\s\S]*FOR UPDATE/;
     const expectedQuery = `
       SELECT id, stock FROM "Product"
       WHERE id = $1
@@ -94,7 +94,7 @@ describe('POST /api/inventory/adjustments', () => {
   it('should perform stock check inside transaction (not outside)', () => {
     // Verify that the stock check is part of the transaction callback
     // using callback syntax prisma.$transaction(async (tx) => { ... })
-    const callbackPattern = /\$transaction.*async.*tx.*\$queryRaw.*FOR UPDATE/s;
+    const callbackPattern = /\$transaction[\s\S]*async[\s\S]*tx[\s\S]*\$queryRaw[\s\S]*FOR UPDATE/;
     const implementationPattern = `prisma.$transaction(async (tx) => {
       const [lockedProduct] = await tx.$queryRaw
       SELECT id, stock FROM "Product" WHERE id = $1 FOR UPDATE
