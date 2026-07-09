@@ -72,7 +72,10 @@ export default function AdjustmentHistory({ productId }: AdjustmentHistoryProps)
   );
 
   useEffect(() => {
-    fetchAdjustments(1);
+    async function refetch() {
+      await fetchAdjustments(1);
+    }
+    refetch();
   }, [fetchAdjustments]);
 
   function formatDate(dateStr: string): string {

@@ -37,7 +37,7 @@ describe('POST /api/orders', () => {
     const mockCreatedOrder = { id: 1, orderNumber: 'ORD-20260708-1234' };
     const mockOrderWithItems = { ...mockCreatedOrder, items: [] };
 
-    mockTransaction.mockImplementation(async (fn: Function) => {
+    mockTransaction.mockImplementation(async (fn: (tx: Record<string, unknown>) => Promise<unknown>) => {
       const tx = {
         $queryRaw: vi.fn().mockResolvedValue(mockLockedProducts),
         order: {
@@ -65,7 +65,7 @@ describe('POST /api/orders', () => {
     // Arrange: product has stock=0, order requests quantity=1
     const mockLockedProducts = [{ id: 1, stock: 0, name: 'Widget' }];
 
-    mockTransaction.mockImplementation(async (fn: Function) => {
+    mockTransaction.mockImplementation(async (fn: (tx: Record<string, unknown>) => Promise<unknown>) => {
       const tx = {
         $queryRaw: vi.fn().mockResolvedValue(mockLockedProducts),
         order: {
@@ -96,7 +96,7 @@ describe('POST /api/orders', () => {
   });
 
   it('should use FOR UPDATE locking (pessimistic concurrency control)', () => {
-    const queryPattern = /SELECT.*FOR UPDATE/s;
+    const queryPattern = /SELECT[\s\S]*FOR UPDATE/;
     const expectedQuery = `
       SELECT id, stock, name FROM "Product"
       WHERE id IN ($1)
@@ -106,7 +106,7 @@ describe('POST /api/orders', () => {
   });
 
   it('should perform stock check inside transaction (not outside)', () => {
-    const transactionPattern = /\$transaction.*async.*\$queryRaw.*FOR UPDATE/s;
+    const transactionPattern = /\$transaction[\s\S]*async[\s\S]*\$queryRaw[\s\S]*FOR UPDATE/;
     const implementationPattern = `prisma.$transaction(async (tx) => {
       const lockedProducts = await tx.$queryRaw
       SELECT id, stock, name FROM "Product" WHERE id IN (...) FOR UPDATE
