@@ -1,5 +1,5 @@
 import { type NextRequest } from 'next/server';
-import { Prisma } from '../../../generated/prisma/client';
+import { Prisma } from '@/generated/prisma/client';
 import prisma from '@/lib/prisma';
 
 // ─── POST /api/orders — create an order ──────────────────────
