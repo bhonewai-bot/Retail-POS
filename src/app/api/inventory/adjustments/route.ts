@@ -1,5 +1,4 @@
 import { type NextRequest } from 'next/server';
-import { Prisma } from '../../../../generated/prisma/client';
 import prisma from '@/lib/prisma';
 
 const VALID_TYPES = ['stock-receipt', 'damage', 'count-adjustment', 'return', 'other'] as const;

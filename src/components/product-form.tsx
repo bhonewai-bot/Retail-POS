@@ -42,7 +42,6 @@ interface ProductFormProps {
 
 export function ProductForm({ mode, productId, initialData, categories }: ProductFormProps) {
   const router = useRouter();
-  const isSubmitting = false;
 
   const {
     register,

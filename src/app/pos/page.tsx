@@ -19,7 +19,6 @@ import {
 import { toast } from 'sonner';
 import {
   Search,
-  Barcode,
   Minus,
   Plus,
   Trash2,
