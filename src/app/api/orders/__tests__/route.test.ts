@@ -37,7 +37,7 @@ describe('POST /api/orders', () => {
     const mockCreatedOrder = { id: 1, orderNumber: 'ORD-20260708-1234' };
     const mockOrderWithItems = { ...mockCreatedOrder, items: [] };
 
-    mockTransaction.mockImplementation(async (fn: Function) => {
+    mockTransaction.mockImplementation(async (fn: (tx: Record<string, unknown>) => Promise<unknown>) => {
       const tx = {
         $queryRaw: vi.fn().mockResolvedValue(mockLockedProducts),
         order: {
@@ -65,7 +65,7 @@ describe('POST /api/orders', () => {
     // Arrange: product has stock=0, order requests quantity=1
     const mockLockedProducts = [{ id: 1, stock: 0, name: 'Widget' }];
 
-    mockTransaction.mockImplementation(async (fn: Function) => {
+    mockTransaction.mockImplementation(async (fn: (tx: Record<string, unknown>) => Promise<unknown>) => {
       const tx = {
         $queryRaw: vi.fn().mockResolvedValue(mockLockedProducts),
         order: {

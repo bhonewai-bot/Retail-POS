@@ -32,7 +32,7 @@ describe('POST /api/inventory/adjustments', () => {
     const mockLockedProduct = { id: 1, stock: 5 };
     const mockCreatedAdjustment = { id: 1, type: 'stock-receipt', quantity: 10 };
 
-    mockTransaction.mockImplementation(async (fn: Function) => {
+    mockTransaction.mockImplementation(async (fn: (tx: Record<string, unknown>) => Promise<unknown>) => {
       const tx = {
         $queryRaw: vi.fn().mockResolvedValue([mockLockedProduct]),
         inventoryAdjustment: {
@@ -56,7 +56,7 @@ describe('POST /api/inventory/adjustments', () => {
     // Arrange: product has stock=3, adjustment removes 5
     const mockLockedProduct = { id: 1, stock: 3 };
 
-    mockTransaction.mockImplementation(async (fn: Function) => {
+    mockTransaction.mockImplementation(async (fn: (tx: Record<string, unknown>) => Promise<unknown>) => {
       const tx = {
         $queryRaw: vi.fn().mockResolvedValue([mockLockedProduct]),
         inventoryAdjustment: {

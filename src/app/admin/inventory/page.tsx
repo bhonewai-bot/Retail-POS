@@ -92,7 +92,10 @@ export default function InventoryPage() {
 
   // Refetch when lowStockFilter changes
   useEffect(() => {
-    fetchInventory(1);
+    async function refetch() {
+      await fetchInventory(1);
+    }
+    refetch();
   }, [lowStockFilter, fetchInventory]);
 
   function handleSearchChange(value: string) {

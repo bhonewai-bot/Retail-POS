@@ -132,7 +132,10 @@ export default function TransactionsPage() {
 
   // Refetch when filters change
   useEffect(() => {
-    fetchOrders(1);
+    async function refetch() {
+      await fetchOrders(1);
+    }
+    refetch();
   }, [fetchOrders]);
 
   function handleClearFilters() {
