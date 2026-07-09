@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    name: CI
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/retail_pos_test
+    services:
+      postgres:
+        image: postgres:16.4-alpine
+        env:
+          POSTGRES_USER: ci
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: retail_pos_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx prisma generate
+
+      - run: npm run lint
+
+      - run: npx tsc --noEmit
+
+      - run: npx prisma db push --skip-generate
+
+      - run: npm run build
